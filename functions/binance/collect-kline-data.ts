@@ -1,9 +1,28 @@
 // deno-lint-ignore-file no-explicit-any
 
 import { load } from "https://deno.land/std@0.223.0/dotenv/mod.ts";
-import { BinanceKlineObj } from "../models/binance-kline-obj.ts";
+import { BinanceKlineObj } from "../../models/binance/kline-obj.ts";
+import loadCSV from "../utils/load-csv.ts";
 
 const env = await load();
+
+async function collectBinanceKlineData(interval: string, startTime: number) {
+  const coins = await loadCSV("./assets/data/coins.csv");
+  const array = [];
+
+  for await (const coin of coins) {
+    const data = await fetchBinanceSpotKlineData(
+      coin.symbol,
+      interval,
+      startTime
+    );
+    array.push({
+      symbol: coin.symbol,
+      data: data,
+    });
+  }
+  return array;
+}
 
 async function fetchBinanceSpotKlineData(
   symbol: string,
@@ -24,11 +43,11 @@ async function fetchBinanceSpotKlineData(
     throw new Error(`Failed to fetch data: ${response.statusText}`);
   }
   const data = await response.json();
-  const klineData = data.map((d: any[]) => KlineDataObj(d));
+  const klineData = data.map((d: any[]) => convertToKlineDataObj(d));
   return klineData;
 }
 
-function KlineDataObj(arr: any[]): BinanceKlineObj {
+function convertToKlineDataObj(arr: any[]): BinanceKlineObj {
   const obj: BinanceKlineObj = {
     openTime: arr[0] / 1000,
     open: parseFloat(arr[1]),
@@ -48,4 +67,4 @@ function KlineDataObj(arr: any[]): BinanceKlineObj {
   return obj;
 }
 
-export default fetchBinanceSpotKlineData;
+export default collectBinanceKlineData;
