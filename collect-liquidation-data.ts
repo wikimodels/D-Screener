@@ -129,4 +129,13 @@ async function updateLiquidationBook(
 //   });
 //   console.log(report);
 // }
+export async function readShit(kv: any) {
+  const entry = await kv.get(["preferences", "ada"]);
+  const shit: any = {
+    fuck: entry.key,
+    shit: entry.value,
+  };
+  return shit;
+}
+
 export default collectLiquidationData;
