@@ -5,6 +5,12 @@ export interface LiquidationObj {
   liqSum: number;
 }
 
+export interface LiquidationRecord {
+  symbol: string;
+  side: string;
+  liqSum: number;
+}
+
 export interface LiquidationData {
   e: string;
   E: number;
