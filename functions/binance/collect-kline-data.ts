@@ -2,7 +2,7 @@
 
 import { load } from "https://deno.land/std@0.223.0/dotenv/mod.ts";
 import { BinanceKlineObj } from "../../models/binance/kline-obj.ts";
-import loadCSV from "../utils/load-csv.ts";
+import loadCSV from "../utils/csv/load-csv.ts";
 
 const env = await load();
 

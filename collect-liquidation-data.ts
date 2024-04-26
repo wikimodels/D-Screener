@@ -1,3 +1,4 @@
+import { express } from "npm:express@4.18.2";
 // deno-lint-ignore-file no-explicit-any no-explicit-any
 const env = await load();
 import {
@@ -13,22 +14,23 @@ import {
   LiquidationObj,
 } from "./models/binance/liquidation-obj.ts";
 import { load } from "https://deno.land/std@0.223.0/dotenv/mod.ts";
-import loadCSV from "./functions/utils/load-csv.ts";
-import writeToCSV from "./functions/utils/write-to-csv.ts";
+import loadCSV from "./functions/utils/csv/load-csv.ts";
+const kv = await Deno.openKv();
 
 async function collectLiquidationData() {
-  const coins: any[] = await loadCSV("./assets/data/coins.csv");
+  const coins: any[] = await getBinanceCoins();
   let liqCounter = createLiquidationCounter(coins);
 
-  //CREATE LIQUIDATION BOOK
-  await writeToCSV(env["LIQUIDATIONS_BOOK"], liqCounter);
+  //SET LIQUIDATION KVDB
+  await resetLiquidationKvDb(coins);
 
   setInterval(async () => {
     const copy = [...liqCounter];
     liqCounter = createLiquidationCounter(coins);
-    await updateLiquidationBook(copy, env["LIQUIDATIONS_BOOK"]);
+    await updateLiquidationKvDb(copy);
     console.log("Liquidations updated");
   }, 60 * 1000);
+
   const ws: WebSocketClient = new StandardWebSocketClient(
     env["BINANCE_ALL_LIQUIDATIONS"]
   );
@@ -43,8 +45,11 @@ async function collectLiquidationData() {
       console.log(obj.symbol, obj.side, obj.liqSum);
     }
   });
-  ws.on("error", function (error: any) {
-    console.log(error);
+
+  ws.on("error", function (error: Error) {
+    console.log("ERROR MESSAGE", error.message);
+    console.log(error.cause);
+    console.log(error.stack);
   });
 }
 
@@ -56,6 +61,20 @@ function getLiquidationObj(data: LiquidationData): LiquidationObj {
     liqSum: data.o.ap * data.o.l,
   };
   return obj;
+}
+
+export async function getBinanceCoins() {
+  let coins: any[] = await loadCSV(env["COINS"]);
+  coins = coins.filter((c) => c.exchange == "bi" || c.exchange == "biby");
+  return coins;
+}
+
+export async function resetLiquidationKvDb(coins: any[]) {
+  console.log("RESET LIQKVDB");
+  for (const coin of coins) {
+    await kv.set(["Liquidation", coin.symbol, "BUY"], 0);
+    await kv.set(["Liquidation", coin.symbol, "SELL"], 0);
+  }
 }
 
 function createLiquidationCounter(array: any[]) {
@@ -97,45 +116,34 @@ function updateLiquidationCounter(
   return _array;
 }
 
-async function updateLiquidationBook(
-  array: LiquidationRecord[],
-  filePath: string
-) {
-  const liqBook: any[] = await loadCSV(filePath);
-  const bookUpdate = liqBook.reduce((acc, cur) => {
-    const rec = array.find((a) => a.symbol == cur.symbol && a.side == cur.side);
-    if (rec) {
-      cur.liqSum = Number(cur.liqSum) + Number(rec.liqSum);
-    }
-    acc.push(cur);
-    return acc;
-  }, []);
-  await writeToCSV(filePath, bookUpdate);
+async function updateLiquidationKvDb(array: LiquidationRecord[]) {
+  for (const record of array) {
+    const dbRecord = await kv.get(["Liquidation", record.symbol, record.side]);
+    const value = Number(dbRecord.value) + Number(record.liqSum);
+    await kv.set(["Liquidation", record.symbol, record.side], value);
+  }
 }
 
-// function testChecker(array: LiquidationObj[]) {
-//   let arr = _.groupBy(array, "symbol");
-//   const keys = Object.keys(arr);
-//   const report: any[] = [];
-//   keys.forEach((k) => {
-//     const _arr = arr[k];
-//     const sum = _arr.reduce((acc, cur) => {
-//       if (cur.side == "SELL") {
-//         acc = acc + Number(cur.liqSum);
-//         return acc;
-//       }
-//     }, 0);
-//     report.push({ symbol: k, liqSum: sum });
-//   });
-//   console.log(report);
-// }
-export async function readShit(kv: any) {
-  const entry = await kv.get(["preferences", "ada"]);
-  const shit: any = {
-    fuck: entry.key,
-    shit: entry.value,
-  };
-  return shit;
+export async function getLiquidationReport(coins: any[]) {
+  console.log("GetLiqReport===");
+  const report = [];
+  for (const coin of coins) {
+    const buyRes = await kv.get(["Liquidation", coin.symbol, "BUY"]);
+    const sellRes = await kv.get(["Liquidation", coin.symbol, "SELL"]);
+    const buyObj = {
+      symbol: coin.symbol,
+      side: "BUY",
+      liqSum: Number(buyRes.value),
+    };
+    const sellObj = {
+      symbol: coin.symbol,
+      side: "SELL",
+      liqSum: Number(sellRes.value),
+    };
+    report.push(buyObj);
+    report.push(sellObj);
+  }
+  return report;
 }
 
 export default collectLiquidationData;
