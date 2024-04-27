@@ -7,7 +7,7 @@ import {
 } from "https://deno.land/x/websocket@v0.1.4/mod.ts";
 
 import * as _ from "https://cdn.skypack.dev/lodash";
-import { datetime } from "https://deno.land/x/ptera/mod.ts";
+import { datetime } from "https://deno.land/x/ptera@v1.0.2/mod.ts";
 import { load } from "https://deno.land/std@0.223.0/dotenv/mod.ts";
 
 import loadCSV from "./functions/utils/csv/load-csv.ts";

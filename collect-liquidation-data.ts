@@ -1,4 +1,3 @@
-import { express } from "npm:express@4.18.2";
 // deno-lint-ignore-file no-explicit-any no-explicit-any
 const env = await load();
 import {
@@ -8,11 +7,11 @@ import {
 
 import * as _ from "https://cdn.skypack.dev/lodash";
 
-import { LiquidationRecord } from "./models/binance/liquidation-obj.ts";
+import { LiquidationRecord } from "./models/binance/force-order.ts";
 import {
   LiquidationData,
   LiquidationObj,
-} from "./models/binance/liquidation-obj.ts";
+} from "./models/binance/force-order.ts";
 import { load } from "https://deno.land/std@0.223.0/dotenv/mod.ts";
 import loadCSV from "./functions/utils/csv/load-csv.ts";
 const kv = await Deno.openKv();
@@ -35,7 +34,7 @@ async function collectLiquidationData() {
     env["BINANCE_ALL_LIQUIDATIONS"]
   );
   ws.on("open", function () {
-    console.log("ws connected!");
+    console.log("----- LIQUIDATIONS WS CONNECTED -----");
   });
   ws.on("message", function (message: any) {
     const data: LiquidationData = JSON.parse(message.data);

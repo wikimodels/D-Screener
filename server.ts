@@ -1,8 +1,8 @@
 // deno-lint-ignore-file
-import { LiquidationData } from "./models/binance/liquidation-obj.ts";
+import { LiquidationData } from "./models/binance/force-order.ts";
 import express from "npm:express@4.18.2";
-import fetchBinanceSpotKlineData from "./functions/binance/collect-kline-data.ts";
-import collectBinanceKlineData from "./functions/binance/collect-kline-data.ts";
+import fetchBinanceSpotKlineData from "./functions/binance/collect-kline-data2.ts";
+import collectBinanceKlineData from "./functions/binance/collect-kline-data2.ts";
 import collectLiquidationData, {
   getBinanceCoins,
   getLiquidationReport,
