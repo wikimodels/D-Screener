@@ -6,41 +6,49 @@ import { KlineData, KlineObj } from "../../../models/binance/kline.ts";
 import {
   setCandleControl,
   getCandleControl,
-} from "../candle-control/candle-control.ts";
-import { mapKlineDataToObj } from "./map-kline-data-to-obj.ts";
+} from "../timeframe-control/timeframe-control.ts";
+
 import { load } from "https://deno.land/std@0.223.0/dotenv/mod.ts";
+import { ConsoleColors, print } from "../../utils/print.ts";
+import { collectOiData } from "../oi/collect-oi-data.ts";
+
+import { createKlineObj } from "./create-kline-obj.ts";
+import { insertKlineWsDataIntoObj } from "./insert-kline-ws-data-into-obj.ts";
 
 const env = await load();
 
-export async function collectKlineData() {
+export async function collectKlineData(symbol: string, timeframe: string) {
   const ws: WebSocketClient = new StandardWebSocketClient(
-    env["BINANCE_SPOT_WS"] + "ethusdt@kline_1m"
+    `${env["BINANCE_SPOT_WS"]}${symbol.toLowerCase()}@kline_${timeframe}`
   );
   ws.on("open", function () {
-    console.log("----- KLINE WS CONNECTED -----");
+    print(ConsoleColors.green, `${symbol} kline-ws --> connected`);
   });
   ws.on("message", async function (message: any) {
     const data: KlineData = JSON.parse(message.data);
-    const obj: KlineObj = mapKlineDataToObj(data);
-    if (obj.isCandleClosed == true) {
-      console.log("============= ROUND ===========");
-      setCandleControl({
-        openTime: obj.openTime,
-        closeTime: obj.closeTime,
-        isClosed: true,
-      });
-      console.log("KLINE SHIT_COUNT", getCandleControl());
+    createKlineObj(data);
+    //x => IS CANDLE CLOSED?
+    if (data.k.x == true) {
+      insertKlineWsDataIntoObj(data);
+      await collectOiData(symbol, "5m");
+      console.log("KLINE SHIT_COUNT", getCandleControl(symbol));
     } else {
       setCandleControl({
+        symbol: symbol,
         openTime: 0,
         closeTime: 0,
         isClosed: false,
       });
     }
   });
-
+  ws.on("ping", (data: Uint8Array) => {
+    print(ConsoleColors.green, `${symbol} kline ---> ping`);
+    // Send a pong frame with the same payload
+    ws.send(data);
+  });
   ws.on("error", function (error: Error) {
-    console.log(error);
+    print(ConsoleColors.red, `${symbol} kline-ws is broken`);
+    throw error;
   });
   ws.on("close", function () {
     console.log("THIS shithole is closed");

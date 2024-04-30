@@ -1,5 +1,6 @@
 import { MarkPriceUpdateObj } from "../../../models/binance/mark-price-update.ts";
 import { MarkPriceUpdateData } from "../../../models/binance/mark-price-update.ts";
+
 export function mapMarkUpdateDataToObj(
   data: MarkPriceUpdateData
 ): MarkPriceUpdateObj {
