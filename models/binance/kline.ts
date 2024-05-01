@@ -1,3 +1,6 @@
+import { LiquidationRecord } from "./liquidation-record.ts";
+import { OpenInterest } from "./oi.ts";
+
 export interface KlineObj {
   symbol: string;
   openTime: number;
@@ -17,24 +20,12 @@ export interface KlineObj {
   takerSellBaseVolume: number;
   takerSellQuoteVolume: number;
   hlc3: number;
-  liquidations: {
-    buy: {
-      liqSum: number;
-      counter: number;
-    };
-    sell: {
-      liqSum: number;
-      counter: number;
-    };
-  };
+  liquidations: LiquidationRecord;
   fr: {
     fundingRate: number;
     nextFundingTime: number;
   };
-  oi: {
-    sumOpenInterest: number;
-    sumOpenInterestValue: number;
-  };
+  oi: OpenInterest;
   vwap: { vwapValue: number; vwap1stDevUp: number; vwap1stDevDown: number };
 }
 

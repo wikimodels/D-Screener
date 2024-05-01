@@ -1,18 +1,16 @@
-import { CandleControl } from "../../../models/binance/candle-control.ts";
+import { TimeframeControl } from "../../../models/binance/timeframe-control.ts";
 import { createTimeframeRepo } from "./create-timeframe-repo.ts";
 
-const candleControls: CandleControl[] = await createTimeframeRepo();
+const tfControls: TimeframeControl[] = await createTimeframeRepo();
 
-export function getCandleControl(symbol: string) {
-  return candleControls.find((c) => c.symbol == symbol);
+export function getTimeframeControl(symbol: string) {
+  return tfControls.find((c) => c.symbol == symbol);
 }
 
-export function setCandleControl(candleControl: CandleControl) {
-  const index = candleControls.findIndex(
-    (c) => c.symbol == candleControl.symbol
-  );
+export function setTimeframeControl(tfControl: TimeframeControl) {
+  const index = tfControls.findIndex((c) => c.symbol == tfControl.symbol);
   if (index == -1) {
-    throw Error(`${candleControl.symbol} is NOT found in CandleControls!`);
+    throw Error(`${tfControl.symbol} is NOT found in tfControls!`);
   }
-  candleControls.splice(index, 1, candleControl);
+  tfControls.splice(index, 1, tfControl);
 }

@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-explicit-any
 import {
   WebSocketClient,
   StandardWebSocketClient,
@@ -8,12 +9,13 @@ import {
 } from "../../../models/binance/mark-price-update.ts";
 import { load } from "https://deno.land/std@0.223.0/dotenv/mod.ts";
 import { print, ConsoleColors } from "../../utils/print.ts";
-import { getCandleControl } from "../timeframe-control/timeframe-control.ts";
+import { getTimeframeControl } from "../timeframe-control/timeframe-control.ts";
 import { mapMarkUpdateDataToObj } from "./map-mark-update-data-to-obj.ts";
+import { insertMarkPriceUpdateRecord } from "./insert-mark-price-update-record.ts";
 
 const env = await load();
 
-export async function collectMarkPriceData(symbol: string) {
+export function collectMarkPriceData(symbol: string) {
   const ws: WebSocketClient = new StandardWebSocketClient(
     `${env["BINANCE_FWS_BASE"]}${symbol.toLowerCase()}@markPrice`
   );
@@ -23,9 +25,10 @@ export async function collectMarkPriceData(symbol: string) {
   ws.on("message", function (message: any) {
     const data: MarkPriceUpdateData = JSON.parse(message.data);
     const obj: MarkPriceUpdateObj = mapMarkUpdateDataToObj(data);
-    if (getCandleControl(symbol)?.isClosed == true) {
-      console.log("MARK PRICE SHIT IS ");
-      console.log(obj.symbol, obj.fundingRate);
+
+    const tfControl = getTimeframeControl(symbol);
+    if (tfControl?.isClosed == true) {
+      insertMarkPriceUpdateRecord(tfControl, obj);
     }
   });
   ws.on("ping", (data: Uint8Array) => {

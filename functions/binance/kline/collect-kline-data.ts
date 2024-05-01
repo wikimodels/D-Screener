@@ -1,12 +1,10 @@
+// deno-lint-ignore-file no-explicit-any
 import {
   WebSocketClient,
   StandardWebSocketClient,
 } from "https://deno.land/x/websocket@v0.1.4/mod.ts";
-import { KlineData, KlineObj } from "../../../models/binance/kline.ts";
-import {
-  setCandleControl,
-  getCandleControl,
-} from "../timeframe-control/timeframe-control.ts";
+import { KlineData } from "../../../models/binance/kline.ts";
+import { setTimeframeControl } from "../timeframe-control/timeframe-control.ts";
 
 import { load } from "https://deno.land/std@0.223.0/dotenv/mod.ts";
 import { ConsoleColors, print } from "../../utils/print.ts";
@@ -14,10 +12,14 @@ import { collectOiData } from "../oi/collect-oi-data.ts";
 
 import { createKlineObj } from "./create-kline-obj.ts";
 import { insertKlineWsDataIntoObj } from "./insert-kline-ws-data-into-obj.ts";
+import { getOiUpdateStatus } from "../oi/get-oi-update-status.ts";
+import { SYNQ } from "../timeframe-control/synq.ts";
+import { testReport } from "../../test.report.ts";
 
 const env = await load();
 
-export async function collectKlineData(symbol: string, timeframe: string) {
+export function collectKlineData(symbol: string) {
+  const timeframe: string = SYNQ.wsTimeframe;
   const ws: WebSocketClient = new StandardWebSocketClient(
     `${env["BINANCE_SPOT_WS"]}${symbol.toLowerCase()}@kline_${timeframe}`
   );
@@ -26,14 +28,25 @@ export async function collectKlineData(symbol: string, timeframe: string) {
   });
   ws.on("message", async function (message: any) {
     const data: KlineData = JSON.parse(message.data);
+    setTimeframeControl({
+      symbol: symbol,
+      openTime: data.k.t,
+      closeTime: data.k.T,
+      isClosed: false,
+    });
     createKlineObj(data);
     //x => IS CANDLE CLOSED?
     if (data.k.x == true) {
       insertKlineWsDataIntoObj(data);
-      await collectOiData(symbol, "5m");
-      console.log("KLINE SHIT_COUNT", getCandleControl(symbol));
+
+      if (!getOiUpdateStatus(data)) {
+        const openTime: number = data.k.t;
+        const closeTime: number = data.k.T;
+        await collectOiData(symbol, openTime, closeTime);
+      }
+      testReport();
     } else {
-      setCandleControl({
+      setTimeframeControl({
         symbol: symbol,
         openTime: 0,
         closeTime: 0,

@@ -36,11 +36,14 @@ export function createKlineObj(data: KlineData) {
       takerSellQuoteVolume: 0,
       hlc3: 0,
       liquidations: {
+        symbol: symbol,
         buy: {
+          isUpdated: false,
           liqSum: 0,
           counter: 0,
         },
         sell: {
+          isUpdated: false,
           liqSum: 0,
           counter: 0,
         },
@@ -50,8 +53,10 @@ export function createKlineObj(data: KlineData) {
         nextFundingTime: 0,
       },
       oi: {
-        sumOpenInterest: 0,
-        sumOpenInterestValue: 0,
+        symbol: symbol,
+        timestamp: 0,
+        isUpdated: false,
+        oiValue: 0,
       },
       vwap: { vwapValue: 0, vwap1stDevUp: 0, vwap1stDevDown: 0 },
     };
@@ -60,14 +65,6 @@ export function createKlineObj(data: KlineData) {
       if (c.symbol == symbol) {
         c.data.push(obj);
       }
-      console.log("New Obj added");
-      console.log(
-        `Symbol ${symbol} OpenTime ${UnixToTime(
-          openTime
-        )} CloseTime ${UnixToTime(closeTime)} `
-      );
     });
-  } else {
-    console.log(`Obj ${symbol} alredy in Repo`);
   }
 }

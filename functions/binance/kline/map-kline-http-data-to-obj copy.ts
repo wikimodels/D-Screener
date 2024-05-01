@@ -2,6 +2,7 @@ import { KlineObj } from "../../../models/binance/kline.ts";
 
 export function mapKlineHttpDataToObj(data: any[], symbol: string): KlineObj {
   const obj: KlineObj = {
+    symbol: symbol,
     openTime: Number(data[0]),
     closeTime: Number(data[6]),
     open: Number(data[1]),
@@ -20,10 +21,12 @@ export function mapKlineHttpDataToObj(data: any[], symbol: string): KlineObj {
     takerSellQuoteVolume: Number(data[7]) - Number(data[10]),
     hlc3: (Number(data[2]) + Number(data[3]) + Number(data[4])) / 3,
     liquidations: {
-      buy: { liqSum: 0, counter: 0 },
-      sell: { liqSum: 0, counter: 0 },
+      buy: { liqSum: 0, counter: 0, isUpdated: false },
+      sell: { liqSum: 0, counter: 0, isUpdated: false },
     },
     oi: {
+      timestamp: 0,
+      isUpdated: false,
       sumOpenInterest: 0,
       sumOpenInterestValue: 0,
     },
@@ -32,7 +35,6 @@ export function mapKlineHttpDataToObj(data: any[], symbol: string): KlineObj {
       nextFundingTime: 0,
     },
     vwap: { vwapValue: 0, vwap1stDevUp: 0, vwap1stDevDown: 0 },
-    symbol: symbol,
   };
   return obj;
 }

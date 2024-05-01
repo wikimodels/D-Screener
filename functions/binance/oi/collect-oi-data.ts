@@ -1,34 +1,27 @@
 import { load } from "https://deno.land/std@0.223.0/dotenv/mod.ts";
-import { generateBinanceSignature } from "../../utils/generate-binance-signature.ts";
-import { OpenInterest } from "../../../models/binance/oi.ts";
+import { OpenInterestData } from "../../../models/binance/oi.ts";
 import { UnixToTime } from "../../utils/time-converter.ts";
+import { insertOiDataIntoObj } from "./insert-oi-data-into-obj.ts";
+import { mapOiDataToObj } from "./map-oi-data-to-obj.ts";
 
 const env = await load();
 
-export async function collectOiData(symbol: string, period: string) {
-  const signature = await generateBinanceSignature(
-    symbol,
-    env["BINANCE_SECRET_KEY"]
-  );
+export async function collectOiData(
+  symbol: string,
+  openTime: number,
+  closeTime: number
+) {
   const url = new URL(env["BINANCE_OI"]);
-  url.searchParams.append("symbol", symbol);
-  url.searchParams.append("period", period);
-  url.searchParams.append("limit", "1");
-  url.searchParams.append("signature", signature);
-
-  const headers = new Headers({
-    "X-MBX-APIKEY": env["BINANCE_API_KEY"],
-    "Content-Type": "application/json",
-  });
+  url.searchParams.append("symbol", symbol.toLocaleLowerCase());
 
   try {
-    const response = await fetch(url, { headers });
+    const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`Failed to fetch data: ${response.statusText}`);
     }
-    const data: OpenInterest[] = await response.json();
-    console.log("OI", UnixToTime(data[0].timestamp), data[0].symbol);
-    console.log("OI Length", data.length);
+    const data: OpenInterestData = await response.json();
+    const obj = mapOiDataToObj(data);
+    insertOiDataIntoObj(obj, openTime, closeTime);
   } catch (error) {
     console.log(error);
     throw error;

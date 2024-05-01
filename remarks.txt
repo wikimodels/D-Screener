@@ -1,0 +1,12 @@
+{
+"symbol": "ETHUSDT",
+"sumOpenInterest": "670052.85600000",
+"sumOpenInterestValue": "1986584078.06475040",
+"timestamp": 1714588200000
+}
+{
+"oiValue": "670979.858",
+"timestamp": 1714588245465,
+"symbol": "ETHUSDT",
+"isUpdated": false
+}

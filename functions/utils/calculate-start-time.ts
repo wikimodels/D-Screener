@@ -1,4 +1,5 @@
-import { UnixToISO } from "./time-converter.ts";
+import { ConsoleColors, print } from "./print.ts";
+import { UnixToISO, UnixToTime } from "./time-converter.ts";
 
 export function calculateStartTime(
   numCandles: number,
@@ -7,7 +8,6 @@ export function calculateStartTime(
   const now = new Date().getTime();
   const totalInterval = numCandles * candleInterval * 60 * 1000; // Convert minutes
   const startTime = now - totalInterval;
-  console.log("startTime", UnixToISO(startTime));
-  console.log("now", UnixToISO(now));
+  print(ConsoleColors.magenta, `${UnixToTime(startTime)} ${UnixToTime(now)}`);
   return startTime;
 }

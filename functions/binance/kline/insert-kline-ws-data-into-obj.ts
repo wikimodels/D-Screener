@@ -1,5 +1,4 @@
-import { KlineData, KlineObj } from "../../../models/binance/kline.ts";
-import { UnixToTime } from "../../utils/time-converter.ts";
+import { KlineData } from "../../../models/binance/kline.ts";
 import { candlesRepo } from "../candles-repo/create-candles-repo.ts";
 
 export function insertKlineWsDataIntoObj(data: KlineData) {
