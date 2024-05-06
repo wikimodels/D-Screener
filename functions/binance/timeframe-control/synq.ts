@@ -1,14 +1,18 @@
 export const SYNQ = {
   loadInitalKlineData: {
-    timeframe: "5m", //string 5m, 1h, ect.
-    numCandles: "5", //number of candles to fetch
+    timeframe: "1m", //string 1m, 1h, ect.
+    numCandles: "10", //number of candles to fetch
   },
   loadInitialOiHistData: {
-    timeframe: "5m",
-    numCandles: "5", //number of candles to fetch
+    timeframe: "1m",
+    numCandles: "10", //number of candles to fetch
   },
   createCandlesRepo: {
-    timeframe: "5m",
+    timeframe: "1m",
   },
-  wsTimeframe: "5m",
+  wsTimeframe: "1m",
+  calculateCMF: {
+    chMfLen: 20,
+    chMfEmaLen: 20,
+  },
 };

@@ -10,3 +10,69 @@
 "symbol": "ETHUSDT",
 "isUpdated": false
 }
+
+5m interval = 299999
+next openTime = previous closeTime + 1 
+next closeTime = openTime + interval
+
+{
+"symbol": "ETHUSDT",
+"openTime": 1714883700000,
+"closeTime": 1714883999999,
+"interval": 299999,
+"open": 3092.61,
+"close": 3093.71,
+"high": 3094.14,
+"low": 3092.33,
+"cmf": {
+"chMfValue": 0,
+"chMfEma": 0
+}
+},
+{
+"symbol": "ETHUSDT",
+"openTime": 1714884000000,
+"closeTime": 1714884299999,
+"interval": 299999,
+"open": 3093.72,
+"close": 3091.41,
+"high": 3093.72,
+"low": 3091.4,
+"cmf": {
+"chMfValue": 0,
+"chMfEma": 0
+}
+},
+
+15m interval = 899999
+next openTime = previous closeTime + 1 
+next closeTime = openTime + interval
+{
+"symbol": "ETHUSDT",
+"openTime": 1714824000000,
+"closeTime": 1714824899999,
+"interval": 899999,
+"open": 3130.45,
+"close": 3137.78,
+"high": 3142.88,
+"low": 3125,
+"cmf": {
+"chMfValue": 0,
+"chMfEma": 0
+}
+},
+{
+"symbol": "ETHUSDT",
+"openTime": 1714824900000,
+"closeTime": 1714825799999,
+"interval": 899999,
+"open": 3137.78,
+"close": 3141.8,
+"high": 3145.72,
+"low": 3136.48,
+"cmf": {
+"chMfValue": 0,
+"chMfEma": 0
+}
+},
+

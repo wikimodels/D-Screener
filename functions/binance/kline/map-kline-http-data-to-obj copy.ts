@@ -21,20 +21,24 @@ export function mapKlineHttpDataToObj(data: any[], symbol: string): KlineObj {
     takerSellQuoteVolume: Number(data[7]) - Number(data[10]),
     hlc3: (Number(data[2]) + Number(data[3]) + Number(data[4])) / 3,
     liquidations: {
-      buy: { liqSum: 0, counter: 0, isUpdated: false },
-      sell: { liqSum: 0, counter: 0, isUpdated: false },
+      buy: { liqSum: 0, counter: 0 },
+      sell: { liqSum: 0, counter: 0 },
+      symbol: symbol,
     },
     oi: {
+      symbol: symbol,
+      oiValue: 0,
       timestamp: 0,
-      isUpdated: false,
-      sumOpenInterest: 0,
-      sumOpenInterestValue: 0,
+      closeTime: 0,
     },
     fr: {
-      fundingRate: 0,
+      fr: 0,
       nextFundingTime: 0,
+      closeTime: 0,
+      symbol: symbol,
     },
     vwap: { vwapValue: 0, vwap1stDevUp: 0, vwap1stDevDown: 0 },
+    chMf: { chMfValue: 0, chMfEma: 0 },
   };
   return obj;
 }

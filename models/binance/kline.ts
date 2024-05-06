@@ -1,3 +1,4 @@
+import { FundingRate } from "./funding-rate.ts";
 import { LiquidationRecord } from "./liquidation-record.ts";
 import { OpenInterest } from "./oi.ts";
 
@@ -21,12 +22,13 @@ export interface KlineObj {
   takerSellQuoteVolume: number;
   hlc3: number;
   liquidations: LiquidationRecord;
-  fr: {
-    fundingRate: number;
-    nextFundingTime: number;
-  };
+  fr: FundingRate;
   oi: OpenInterest;
   vwap: { vwapValue: number; vwap1stDevUp: number; vwap1stDevDown: number };
+  chMf: {
+    chMfValue: number;
+    chMfEma: number;
+  };
 }
 
 export interface KlineData {

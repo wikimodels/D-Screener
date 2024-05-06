@@ -13,15 +13,18 @@ import {
 } from "./models/binance/oi.ts";
 import { UnixToTime } from "./functions/utils/time-converter.ts";
 import { mapOiDataToObj } from "./functions/binance/oi/map-oi-data-to-obj.ts";
+import { listenQueues } from "./functions/kv-utils/kv-listening.ts";
+import { KlineObj } from "./models/binance/kline.ts";
+import { ConsoleColors, print } from "./functions/utils/print.ts";
 const env = await load();
 
 const app = express();
-
+const kv = await Deno.openKv("15m");
 app.get("/", async (req: any, res: any) => {
   try {
-    const resp = testReport();
+    const shit = await testReport();
 
-    res.send(resp);
+    res.send(shit);
   } catch (e) {
     console.log(e);
   }
@@ -39,7 +42,7 @@ app.get("/oi", async (req: any, res: any) => {
 });
 
 app.listen(8000, async () => {
-  console.log("Server is running...");
+  print(ConsoleColors.green, "Server ---> running...");
 });
 
 async function collectOiTestData(symbol: string) {
@@ -60,36 +63,5 @@ async function collectOiTestData(symbol: string) {
   }
 }
 
-async function collectOiHistTestData(symbol: string) {
-  const timeframe: string = SYNQ.loadInitalKlineData.timeframe;
-  const limit: string = SYNQ.loadInitalKlineData.numCandles;
-
-  const signature = await generateBinanceSignature(
-    symbol,
-    env["BINANCE_SECRET_KEY"]
-  );
-  const url = new URL(env["BINANCE_OI_HIST"]);
-  url.searchParams.append("symbol", symbol);
-  url.searchParams.append("period", timeframe);
-  url.searchParams.append("limit", limit);
-  url.searchParams.append("signature", signature);
-
-  const headers = new Headers({
-    "X-MBX-APIKEY": env["BINANCE_API_KEY"],
-    "Content-Type": "application/json",
-  });
-
-  try {
-    const response = await fetch(url, { headers });
-    if (!response.ok) {
-      throw new Error(`Failed to fetch data: ${response.statusText}`);
-    }
-    const data: OpenInterestHist[] = await response.json();
-    return data;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
-}
-
 ws_main();
+listenQueues();

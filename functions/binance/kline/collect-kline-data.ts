@@ -3,18 +3,20 @@ import {
   WebSocketClient,
   StandardWebSocketClient,
 } from "https://deno.land/x/websocket@v0.1.4/mod.ts";
-import { KlineData } from "../../../models/binance/kline.ts";
+import { KlineData, KlineObj } from "../../../models/binance/kline.ts";
 import { setTimeframeControl } from "../timeframe-control/timeframe-control.ts";
 
 import { load } from "https://deno.land/std@0.223.0/dotenv/mod.ts";
 import { ConsoleColors, print } from "../../utils/print.ts";
 import { collectOiData } from "../oi/collect-oi-data.ts";
 
-import { createKlineObj } from "./create-kline-obj.ts";
-import { insertKlineWsDataIntoObj } from "./insert-kline-ws-data-into-obj.ts";
-import { getOiUpdateStatus } from "../oi/get-oi-update-status.ts";
 import { SYNQ } from "../timeframe-control/synq.ts";
-import { testReport } from "../../test.report.ts";
+
+import { enqueue } from "../../kv-utils/kv-enqueue.ts";
+import { TimeframeControl } from "../../../models/binance/timeframe-control.ts";
+import { oiRecordExists } from "../oi/oi-record-exists.ts";
+import { QueueTask } from "../../../models/queue-task.ts";
+import { mapKlineWsDataIntoObj } from "./map-kline-ws-data-into-obj.ts";
 
 const env = await load();
 
@@ -34,17 +36,32 @@ export function collectKlineData(symbol: string) {
       closeTime: data.k.T,
       isClosed: false,
     });
-    createKlineObj(data);
+
     //x => IS CANDLE CLOSED?
     if (data.k.x == true) {
-      insertKlineWsDataIntoObj(data);
+      const tfControl: TimeframeControl = {
+        openTime: data.k.t,
+        closeTime: data.k.T,
+        isClosed: true,
+        symbol: symbol,
+      };
+      setTimeframeControl(tfControl);
+      const obj: KlineObj = mapKlineWsDataIntoObj(data);
+      const task: QueueTask = {
+        kvNamespace: "15m",
+        msg: {
+          queueName: "insertKlineWsDataIntoObj",
+          data: {
+            dataObj: obj,
+            closeTime: obj.closeTime,
+          },
+        },
+      };
+      await enqueue(task);
 
-      if (!getOiUpdateStatus(data)) {
-        const openTime: number = data.k.t;
-        const closeTime: number = data.k.T;
-        await collectOiData(symbol, openTime, closeTime);
+      if (!(await oiRecordExists(obj, "15m"))) {
+        await collectOiData(symbol, obj.closeTime);
       }
-      testReport();
     } else {
       setTimeframeControl({
         symbol: symbol,

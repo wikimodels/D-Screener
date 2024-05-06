@@ -15,5 +15,5 @@ export interface OpenInterest {
   symbol: string;
   oiValue: number;
   timestamp: number;
-  isUpdated: boolean;
+  closeTime: number;
 }

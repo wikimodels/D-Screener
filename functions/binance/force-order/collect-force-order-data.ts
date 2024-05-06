@@ -16,7 +16,8 @@ import { print } from "../../utils/print.ts";
 import { LiquidationRecord } from "../../../models/binance/liquidation-record.ts";
 import { resetLiquidationRecord } from "./reset-liquidation-record.ts";
 import { updateLiquidationRecord } from "./update-liquidation-record.ts";
-import { insertLiquidationRecord } from "./insert-liquidation-record.ts";
+import { enqueue } from "../../kv-utils/kv-enqueue.ts";
+import { QueueTask } from "../../../models/queue-task.ts";
 
 const env = await load();
 
@@ -31,14 +32,24 @@ export function collectForeOrderData(symbol: string) {
     print(ConsoleColors.yellow, `${symbol} forceOrder-ws --> connected`);
   });
 
-  ws.on("message", function (message: any) {
+  ws.on("message", async function (message: any) {
     const data: ForceOrderData = JSON.parse(message.data);
     const obj: ForceOrderObj = mapForceOrderDataToObj(data);
     liquidationRecord = updateLiquidationRecord(liquidationRecord, obj);
 
     const tfControl = getTimeframeControl(symbol);
     if (tfControl?.isClosed == true) {
-      insertLiquidationRecord(tfControl, liquidationRecord);
+      const task: QueueTask = {
+        kvNamespace: "15m",
+        msg: {
+          queueName: "insertLiquidationRecord",
+          data: {
+            dataObj: liquidationRecord,
+            closeTime: tfControl.closeTime,
+          },
+        },
+      };
+      await enqueue(task);
       liquidationRecord = resetLiquidationRecord(symbol);
     }
   });

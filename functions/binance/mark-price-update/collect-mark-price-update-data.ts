@@ -3,15 +3,16 @@ import {
   WebSocketClient,
   StandardWebSocketClient,
 } from "https://deno.land/x/websocket@v0.1.4/mod.ts";
-import {
-  MarkPriceUpdateData,
-  MarkPriceUpdateObj,
-} from "../../../models/binance/mark-price-update.ts";
+import { MarkPriceUpdateData } from "../../../models/binance/mark-price-update.ts";
 import { load } from "https://deno.land/std@0.223.0/dotenv/mod.ts";
 import { print, ConsoleColors } from "../../utils/print.ts";
 import { getTimeframeControl } from "../timeframe-control/timeframe-control.ts";
+
+import { enqueue } from "../../kv-utils/kv-enqueue.ts";
+
+import { FundingRate } from "../../../models/binance/funding-rate.ts";
+import { QueueTask } from "../../../models/queue-task.ts";
 import { mapMarkUpdateDataToObj } from "./map-mark-update-data-to-obj.ts";
-import { insertMarkPriceUpdateRecord } from "./insert-mark-price-update-record.ts";
 
 const env = await load();
 
@@ -22,13 +23,26 @@ export function collectMarkPriceData(symbol: string) {
   ws.on("open", function () {
     print(ConsoleColors.cyan, `${symbol} markPrice --> connected`);
   });
-  ws.on("message", function (message: any) {
-    const data: MarkPriceUpdateData = JSON.parse(message.data);
-    const obj: MarkPriceUpdateObj = mapMarkUpdateDataToObj(data);
-
+  ws.on("message", async function (message: any) {
     const tfControl = getTimeframeControl(symbol);
-    if (tfControl?.isClosed == true) {
-      insertMarkPriceUpdateRecord(tfControl, obj);
+    const data: MarkPriceUpdateData = JSON.parse(message.data);
+
+    if (tfControl && tfControl.closeTime && tfControl.closeTime != 0) {
+      const obj: FundingRate = mapMarkUpdateDataToObj(
+        data,
+        tfControl.closeTime
+      );
+      const task: QueueTask = {
+        kvNamespace: "15m",
+        msg: {
+          data: {
+            closeTime: tfControl.closeTime,
+            dataObj: obj as FundingRate,
+          },
+          queueName: "insertFundingRateRecord",
+        },
+      };
+      await enqueue(task);
     }
   });
   ws.on("ping", (data: Uint8Array) => {

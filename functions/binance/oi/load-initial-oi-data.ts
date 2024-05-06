@@ -2,16 +2,14 @@ import { load } from "https://deno.land/std@0.223.0/dotenv/mod.ts";
 import { generateBinanceSignature } from "../../utils/generate-binance-signature.ts";
 import { OpenInterestHist } from "../../../models/binance/oi.ts";
 import { UnixToTime } from "../../utils/time-converter.ts";
-
 import { SYNQ } from "../timeframe-control/synq.ts";
-import { insertOiDataIntoRepo } from "./insert-oi-data-into-repo.ts";
 
 const env = await load();
 
 export async function loadInitialOiData(symbol: string) {
   const timeframe: string = SYNQ.loadInitialOiHistData.timeframe;
   const numCandles: string = SYNQ.loadInitialOiHistData.numCandles;
-
+  console.log("NumOfCandles", numCandles);
   const signature = await generateBinanceSignature(
     symbol,
     env["BINANCE_SECRET_KEY"]
@@ -33,7 +31,7 @@ export async function loadInitialOiData(symbol: string) {
       throw new Error(`Failed to fetch data: ${response.statusText}`);
     }
     const data: OpenInterestHist[] = await response.json();
-    insertOiDataIntoRepo(data);
+    return data;
   } catch (error) {
     console.log(error);
     throw error;
