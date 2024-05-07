@@ -21,7 +21,6 @@ import { assembleKline } from "./functions/binance/kline/assemble-kline.ts";
 import { ws_main } from "./ws-main.ts";
 import { calculateChMf } from "./indicators/chmf.ts";
 import { calculateVO } from "./indicators/vo.ts";
-import { _ } from "https://cdn.skypack.dev/lodash";
 const env = await load();
 
 const app = express();
@@ -51,5 +50,5 @@ app.listen(8000, async () => {
   print(ConsoleColors.green, "Server ---> running...");
 });
 
-ws_main("1m");
+ws_main("1h");
 listenQueues();

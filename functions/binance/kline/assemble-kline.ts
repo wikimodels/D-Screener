@@ -1,7 +1,7 @@
-import { getAllLiquidations } from "../force-order/get-all-liquidations.ts";
-import { getAllFundingRates } from "../mark-price-update/get-all-fr.ts";
-import { getAllOpenInterest } from "../oi/get-all-oi.ts";
-import { getAllKline } from "./get-all-kline.ts";
+import { getAllLiquidations } from "../force-order/get-liq-by-symbol.ts";
+import { getAllFundingRates } from "../mark-price-update/get-fr-by-symbol.ts";
+import { getAllOpenInterest } from "../oi/get-oi-by-symbol.ts";
+import { getAllKline } from "./get-kline-by-symbol.ts";
 
 export async function assembleKline(timeframe: string) {
   const kline = await getAllKline(timeframe);
