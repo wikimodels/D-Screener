@@ -29,6 +29,11 @@ export interface KlineObj {
     chMfValue: number;
     chMfEma: number;
   };
+  vo: {
+    sellValue: number;
+    buyValue: number;
+  };
+  vzo: number;
 }
 
 export interface KlineData {

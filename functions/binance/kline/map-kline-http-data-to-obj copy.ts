@@ -24,6 +24,7 @@ export function mapKlineHttpDataToObj(data: any[], symbol: string): KlineObj {
       buy: { liqSum: 0, counter: 0 },
       sell: { liqSum: 0, counter: 0 },
       symbol: symbol,
+      closeTime: 0,
     },
     oi: {
       symbol: symbol,
@@ -39,6 +40,8 @@ export function mapKlineHttpDataToObj(data: any[], symbol: string): KlineObj {
     },
     vwap: { vwapValue: 0, vwap1stDevUp: 0, vwap1stDevDown: 0 },
     chMf: { chMfValue: 0, chMfEma: 0 },
+    vo: { sellValue: 0, buyValue: 0 },
+    vzo: 0,
   };
   return obj;
 }

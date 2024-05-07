@@ -4,7 +4,7 @@ import { KlineObj } from "../../../models/binance/kline.ts";
 import { calculateStartTime } from "../../utils/calculate-start-time.ts";
 import { SYNQ } from "../timeframe-control/synq.ts";
 import { mapKlineHttpDataToObj } from "./map-kline-http-data-to-obj%20copy.ts";
-import { getCandleInterval } from "./get-candle-interval.ts";
+import { getCandleInterval } from "../../utils/get-candle-interval.ts";
 
 const env = await load();
 

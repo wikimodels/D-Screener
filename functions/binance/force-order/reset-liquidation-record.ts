@@ -5,6 +5,7 @@ export function resetLiquidationRecord(symbol: string): LiquidationRecord {
     symbol: symbol,
     buy: { liqSum: 0, counter: 0 },
     sell: { liqSum: 0, counter: 0 },
+    closeTime: 0,
   };
   return obj;
 }

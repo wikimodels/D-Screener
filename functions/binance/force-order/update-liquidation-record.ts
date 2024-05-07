@@ -3,7 +3,8 @@ import { LiquidationRecord } from "../../../models/binance/liquidation-record.ts
 
 export function updateLiquidationRecord(
   record: LiquidationRecord,
-  obj: ForceOrderObj
+  obj: ForceOrderObj,
+  closeTime: number
 ): LiquidationRecord {
   if (obj.order.side == "BUY") {
     record.buy.liqSum += obj.order.lastFilledQty * obj.order.averagePrice;
@@ -17,5 +18,6 @@ export function updateLiquidationRecord(
   if (obj.order.side == "SELL" && obj.order.orderStatus == "FILLED") {
     record.sell.counter += 1;
   }
+  record.closeTime = closeTime;
   return record;
 }

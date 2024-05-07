@@ -21,6 +21,7 @@ export function mapKlineWsDataIntoObj(data: KlineData) {
     isHammer: false,
     isPinbar: false,
     liquidations: {
+      closeTime: 0,
       buy: {
         liqSum: 0,
         counter: 0,
@@ -45,6 +46,8 @@ export function mapKlineWsDataIntoObj(data: KlineData) {
     },
     vwap: { vwapValue: 0, vwap1stDevUp: 0, vwap1stDevDown: 0 },
     chMf: { chMfValue: 0, chMfEma: 0 },
+    vo: { sellValue: 0, buyValue: 0 },
+    vzo: 0,
   };
   return obj;
 }

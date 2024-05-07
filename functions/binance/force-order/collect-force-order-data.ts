@@ -35,10 +35,15 @@ export function collectForceOrderData(symbol: string, timeframe: string) {
   ws.on("message", async function (message: any) {
     const data: ForceOrderData = JSON.parse(message.data);
     const obj: ForceOrderObj = mapForceOrderDataToObj(data);
-    liquidationRecord = updateLiquidationRecord(liquidationRecord, obj);
-
     const tfControl = getTimeframeControl(symbol);
+    liquidationRecord = updateLiquidationRecord(
+      liquidationRecord,
+      obj,
+      tfControl?.closeTime || 0
+    );
+
     if (tfControl?.isClosed == true) {
+      liquidationRecord.closeTime = tfControl?.closeTime;
       const msg: QueueMsg = {
         timeframe: timeframe,
         queueName: "insertLiquidationRecord",
