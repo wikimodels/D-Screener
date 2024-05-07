@@ -1,9 +1,5 @@
-export interface QueueTask {
-  kvNamespace: string;
-  msg: Msg;
-}
-
-export interface Msg {
+export interface QueueMsg {
+  timeframe: string;
   queueName: string;
   data: {
     dataObj: any;

@@ -11,12 +11,12 @@ import { getTimeframeControl } from "../timeframe-control/timeframe-control.ts";
 import { enqueue } from "../../kv-utils/kv-enqueue.ts";
 
 import { FundingRate } from "../../../models/binance/funding-rate.ts";
-import { QueueTask } from "../../../models/queue-task.ts";
+import { QueueMsg } from "../../../models/queue-task.ts";
 import { mapMarkUpdateDataToObj } from "./map-mark-update-data-to-obj.ts";
 
 const env = await load();
 
-export function collectMarkPriceData(symbol: string) {
+export function collectMarkPriceData(symbol: string, timeframe: string) {
   const ws: WebSocketClient = new StandardWebSocketClient(
     `${env["BINANCE_FWS_BASE"]}${symbol.toLowerCase()}@markPrice`
   );
@@ -32,17 +32,15 @@ export function collectMarkPriceData(symbol: string) {
         data,
         tfControl.closeTime
       );
-      const task: QueueTask = {
-        kvNamespace: "15m",
-        msg: {
-          data: {
-            closeTime: tfControl.closeTime,
-            dataObj: obj as FundingRate,
-          },
-          queueName: "insertFundingRateRecord",
+      const msg: QueueMsg = {
+        data: {
+          closeTime: tfControl.closeTime,
+          dataObj: obj as FundingRate,
         },
+        queueName: "insertFundingRateRecord",
+        timeframe: timeframe,
       };
-      await enqueue(task);
+      await enqueue(msg);
     }
   });
   ws.on("ping", (data: Uint8Array) => {

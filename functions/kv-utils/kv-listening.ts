@@ -1,23 +1,27 @@
+import { QueueMsg } from "./../../models/queue-task.ts";
 import { FundingRate } from "../../models/binance/funding-rate.ts";
-import { KlineData, KlineObj } from "../../models/binance/kline.ts";
+import { KlineObj } from "../../models/binance/kline.ts";
 import { LiquidationRecord } from "../../models/binance/liquidation-record.ts";
 import { OpenInterest, OpenInterestHist } from "../../models/binance/oi.ts";
-import { Msg } from "../../models/queue-task.ts";
 
-const kv = await Deno.openKv("15m");
-
-export function listenQueues() {
+export async function listenQueues() {
+  const kv = await Deno.openKv();
   try {
-    kv.listenQueue(async (msg: Msg) => {
+    kv.listenQueue(async (msg: QueueMsg) => {
       if (msg.queueName == "loadInitalKlineObjToKv") {
         const obj = msg.data.dataObj as KlineObj;
-        await kv.set(["Kline", obj.symbol, msg.data.closeTime], obj);
+        await kv.set(
+          [`Kline_${msg.timeframe}`, obj.symbol, msg.data.closeTime],
+          obj
+        );
       }
       if (msg.queueName == "loadOiToInitialKlineObj") {
         const obj = msg.data.dataObj as OpenInterestHist;
         const symbol: string = obj.symbol;
 
-        const entries = await kv.list<KlineObj>({ prefix: ["Kline"] });
+        const entries = await kv.list<KlineObj>({
+          prefix: [`Kline_${msg.timeframe}`],
+        });
         for await (const res of entries) {
           const klineObj: KlineObj = res.value;
           if (
@@ -31,7 +35,10 @@ export function listenQueues() {
               timestamp: obj.timestamp,
               closeTime: klineObj.closeTime,
             };
-            await kv.set(["Kline", symbol, klineObj.closeTime], klineObj);
+            await kv.set(
+              [`Kline_${msg.timeframe}`, symbol, klineObj.closeTime],
+              klineObj
+            );
           }
         }
       }
@@ -40,24 +47,31 @@ export function listenQueues() {
         const closeTime = msg.data.closeTime;
         const symbol: string = obj.symbol;
 
-        const entries = await kv.list<KlineObj>({ prefix: ["Kline"] });
+        const entries = await kv.list<KlineObj>({
+          prefix: [`Kline_${msg.timeframe}`],
+        });
         for await (const res of entries) {
           if (
             res.value.closeTime == closeTime &&
             res.value.symbol == obj.symbol
           ) {
-            await kv.delete(["Kline", symbol, closeTime]);
+            await kv.delete([`Kline_${msg.timeframe}`, symbol, closeTime]);
           }
-          await kv.set(["Kline", symbol, closeTime], obj);
+          await kv.set([`Kline_${msg.timeframe}`, symbol, closeTime], obj);
         }
       }
       if (msg.queueName == "insertFundingRateRecord") {
         const obj: FundingRate = msg.data.dataObj as FundingRate;
         const closeTime: number = msg.data.closeTime;
-        const prevRecord = (await kv.get(["Fr", obj.symbol, closeTime]))
-          .value as FundingRate;
-        if (!prevRecord || prevRecord.fr != obj.fr) {
-          await kv.set(["Fr", obj.symbol, closeTime], obj);
+        const prevRecord = (
+          await kv.get([`Fr_${msg.timeframe}`, obj.symbol, closeTime])
+        ).value as FundingRate;
+        if (
+          !prevRecord ||
+          prevRecord.fr != obj.fr ||
+          prevRecord.nextFundingTime != obj.nextFundingTime
+        ) {
+          await kv.set([`Fr_${msg.timeframe}`, obj.symbol, closeTime], obj);
           console.log("Fr inserted", obj.symbol, obj.fr);
         }
       }
@@ -66,9 +80,13 @@ export function listenQueues() {
         const obj: LiquidationRecord = msg.data.dataObj as LiquidationRecord;
         const closeTime: number = msg.data.closeTime;
         const record: Deno.KvEntryMaybe<LiquidationRecord> =
-          await kv.get<LiquidationRecord>(["Liq", obj.symbol, closeTime]);
+          await kv.get<LiquidationRecord>([
+            `Liq_${msg.timeframe}`,
+            obj.symbol,
+            closeTime,
+          ]);
         if (!record.value) {
-          await kv.set(["Liq", obj.symbol, closeTime], obj);
+          await kv.set([`Liq_${msg.timeframe}`, obj.symbol, closeTime], obj);
         }
       }
 
@@ -76,9 +94,13 @@ export function listenQueues() {
         const obj = msg.data.dataObj as OpenInterest;
         const closeTime: number = msg.data.closeTime;
         const record: Deno.KvEntryMaybe<OpenInterest> =
-          await kv.get<OpenInterest>(["Oi", obj.symbol, closeTime]);
+          await kv.get<OpenInterest>([
+            `Oi_${msg.timeframe}`,
+            obj.symbol,
+            closeTime,
+          ]);
         if (!record.value) {
-          await kv.set(["Oi", obj.symbol, closeTime], obj);
+          await kv.set([`Oi_${msg.timeframe}`, obj.symbol, closeTime], obj);
         }
       }
     });

@@ -17,11 +17,11 @@ import { LiquidationRecord } from "../../../models/binance/liquidation-record.ts
 import { resetLiquidationRecord } from "./reset-liquidation-record.ts";
 import { updateLiquidationRecord } from "./update-liquidation-record.ts";
 import { enqueue } from "../../kv-utils/kv-enqueue.ts";
-import { QueueTask } from "../../../models/queue-task.ts";
+import { QueueMsg } from "../../../models/queue-task.ts";
 
 const env = await load();
 
-export function collectForeOrderData(symbol: string) {
+export function collectForceOrderData(symbol: string, timeframe: string) {
   let liquidationRecord: LiquidationRecord = resetLiquidationRecord(symbol);
 
   const ws: WebSocketClient = new StandardWebSocketClient(
@@ -39,17 +39,15 @@ export function collectForeOrderData(symbol: string) {
 
     const tfControl = getTimeframeControl(symbol);
     if (tfControl?.isClosed == true) {
-      const task: QueueTask = {
-        kvNamespace: "15m",
-        msg: {
-          queueName: "insertLiquidationRecord",
-          data: {
-            dataObj: liquidationRecord,
-            closeTime: tfControl.closeTime,
-          },
+      const msg: QueueMsg = {
+        timeframe: timeframe,
+        queueName: "insertLiquidationRecord",
+        data: {
+          dataObj: liquidationRecord,
+          closeTime: tfControl.closeTime,
         },
       };
-      await enqueue(task);
+      await enqueue(msg);
       liquidationRecord = resetLiquidationRecord(symbol);
     }
   });

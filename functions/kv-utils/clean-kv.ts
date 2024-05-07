@@ -1,5 +1,5 @@
-export async function cleanKv(workspace: string) {
-  const kv = await Deno.openKv(workspace);
+export async function cleanKv() {
+  const kv = await Deno.openKv();
   const entries = kv.list({ prefix: [] });
 
   for await (const item of entries) {

@@ -1,3 +1,4 @@
+import { datetime } from "https://deno.land/x/ptera@v1.0.2/mod.ts";
 // deno-lint-ignore-file
 import express from "npm:express@4.18.2";
 import { ws_main } from "./ws-main.ts";
@@ -19,7 +20,7 @@ import { ConsoleColors, print } from "./functions/utils/print.ts";
 const env = await load();
 
 const app = express();
-const kv = await Deno.openKv("15m");
+const kv = await Deno.openKv();
 app.get("/", async (req: any, res: any) => {
   try {
     const shit = await testReport();
@@ -33,7 +34,7 @@ app.get("/", async (req: any, res: any) => {
 app.get("/oi", async (req: any, res: any) => {
   try {
     //const data = testReport();
-    const data = await collectOiTestData("ETHUSDT");
+    const data: any[] = [];
 
     res.send(data);
   } catch (e) {
@@ -45,23 +46,5 @@ app.listen(8000, async () => {
   print(ConsoleColors.green, "Server ---> running...");
 });
 
-async function collectOiTestData(symbol: string) {
-  const url = new URL(env["BINANCE_OI"]);
-  url.searchParams.append("symbol", symbol.toLocaleLowerCase());
-
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch data: ${response.statusText}`);
-    }
-    const data: OpenInterestData = await response.json();
-    const obj = mapOiDataToObj(data);
-    return obj;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
-}
-
-ws_main();
+ws_main("1m");
 listenQueues();

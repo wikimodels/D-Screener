@@ -1,6 +1,6 @@
-import { QueueTask } from "../../models/queue-task.ts";
+import { QueueMsg } from "../../models/queue-task.ts";
 
-export async function enqueue(task: QueueTask) {
-  const kv = await Deno.openKv(task.kvNamespace);
-  await kv.enqueue(task.msg);
+export async function enqueue(msg: QueueMsg) {
+  const kv = await Deno.openKv();
+  await kv.enqueue(msg);
 }

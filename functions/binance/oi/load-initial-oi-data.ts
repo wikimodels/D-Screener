@@ -6,10 +6,9 @@ import { SYNQ } from "../timeframe-control/synq.ts";
 
 const env = await load();
 
-export async function loadInitialOiData(symbol: string) {
-  const timeframe: string = SYNQ.loadInitialOiHistData.timeframe;
+export async function loadInitialOiData(symbol: string, timeframe: string) {
+  timeframe = timeframe == "1m" ? "5m" : timeframe;
   const numCandles: string = SYNQ.loadInitialOiHistData.numCandles;
-  console.log("NumOfCandles", numCandles);
   const signature = await generateBinanceSignature(
     symbol,
     env["BINANCE_SECRET_KEY"]

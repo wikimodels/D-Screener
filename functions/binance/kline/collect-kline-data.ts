@@ -15,13 +15,12 @@ import { SYNQ } from "../timeframe-control/synq.ts";
 import { enqueue } from "../../kv-utils/kv-enqueue.ts";
 import { TimeframeControl } from "../../../models/binance/timeframe-control.ts";
 import { oiRecordExists } from "../oi/oi-record-exists.ts";
-import { QueueTask } from "../../../models/queue-task.ts";
 import { mapKlineWsDataIntoObj } from "./map-kline-ws-data-into-obj.ts";
+import { QueueMsg } from "../../../models/queue-task.ts";
 
 const env = await load();
 
-export function collectKlineData(symbol: string) {
-  const timeframe: string = SYNQ.wsTimeframe;
+export function collectKlineData(symbol: string, timeframe: string) {
   const ws: WebSocketClient = new StandardWebSocketClient(
     `${env["BINANCE_SPOT_WS"]}${symbol.toLowerCase()}@kline_${timeframe}`
   );
@@ -47,20 +46,18 @@ export function collectKlineData(symbol: string) {
       };
       setTimeframeControl(tfControl);
       const obj: KlineObj = mapKlineWsDataIntoObj(data);
-      const task: QueueTask = {
-        kvNamespace: "15m",
-        msg: {
-          queueName: "insertKlineWsDataIntoObj",
-          data: {
-            dataObj: obj,
-            closeTime: obj.closeTime,
-          },
+      const msg: QueueMsg = {
+        timeframe: timeframe,
+        queueName: "insertKlineWsDataIntoObj",
+        data: {
+          dataObj: obj,
+          closeTime: obj.closeTime,
         },
       };
-      await enqueue(task);
+      await enqueue(msg);
 
-      if (!(await oiRecordExists(obj, "15m"))) {
-        await collectOiData(symbol, obj.closeTime);
+      if (!(await oiRecordExists(obj, timeframe))) {
+        await collectOiData(symbol, obj.closeTime, timeframe);
       }
     } else {
       setTimeframeControl({

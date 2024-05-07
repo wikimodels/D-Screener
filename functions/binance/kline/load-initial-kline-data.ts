@@ -8,8 +8,10 @@ import { getCandleInterval } from "./get-candle-interval.ts";
 
 const env = await load();
 
-export async function loadInitalKlineData(symbol: string): Promise<KlineObj[]> {
-  const timeframe: string = SYNQ.loadInitalKlineData.timeframe;
+export async function loadInitalKlineData(
+  symbol: string,
+  timeframe: string
+): Promise<KlineObj[]> {
   const numCandles: string = SYNQ.loadInitalKlineData.numCandles;
   const candleIntervalInMin: number = getCandleInterval(timeframe);
 
