@@ -1,3 +1,4 @@
+import { UnixToTime } from "../functions/utils/time-converter.ts";
 import { KlineObj } from "../models/binance/kline.ts";
 
 function getPreviousMonday() {
@@ -15,52 +16,46 @@ function getPreviousMonday() {
 }
 
 export function isStartOfMonday(time: number) {
-  const day = new Date(time * 1000).getDay();
-  const hours = new Date(time * 1000).getHours();
-  const minutes = new Date(time * 1000).getMinutes();
+  const day = new Date(time).getDay();
+  const hours = new Date(time).getHours();
+  const minutes = new Date(time).getMinutes();
   const res = day == 1 && hours == 3 && minutes == 0 ? true : false;
   return res;
 }
 
-export function splitByWeek(klineObjs: KlineObj[]) {
-  const weeks = [];
-  for (let i = 0; i < klineObjs.length - 1; i++) {
-    const currentWeek = [];
-    if (isStartOfMonday(klineObjs[i].openTime)) {
-      currentWeek.push(klineObjs[i]);
-      let index = i + 1;
-      while (klineObjs && !isStartOfMonday(klineObjs[index].openTime)) {
-        currentWeek.push(klineObjs[index]);
-        if (index == klineObjs.length - 1) {
-          break;
-        } else {
-          index++;
-        }
-      }
-      weeks.push(currentWeek);
-
-      if (i < klineObjs.length - 1) {
-        i = index - 1;
-      }
+export function splitByWeeks(klineObjs: KlineObj[]) {
+  const mondaysIndices: { index: number }[] = [];
+  klineObjs.forEach((o, i) => {
+    if (isStartOfMonday(o.openTime)) {
+      mondaysIndices.push({ index: i });
     }
-  }
+  });
+
+  const weeks: any[] = [];
+  mondaysIndices.forEach((m) => {
+    const weekStart = m.index;
+    const weekEnd =
+      m.index + 168 > klineObjs.length ? klineObjs.length : m.index + 168;
+    const week = klineObjs.slice(weekStart, weekEnd);
+    weeks.push(week);
+  });
   return weeks;
 }
 
-function calculateWeeklyVWAP(klineObj: KlineObj[]) {
-  const weeks = splitByWeek(klineObj);
-  const vwap: any[] = [];
+export function calculateWeeklyVWAP(klineObj: KlineObj[]): KlineObj[] {
+  const weeks = splitByWeeks(klineObj);
+  const result: any[] = [];
   for (let i = 0; i < weeks.length; i++) {
-    const _vwap = calculateVWAP(weeks[i]);
-    _vwap.forEach((v) => {
-      vwap.push(v);
+    const objs = calculateVWAP(weeks[i]);
+    objs.forEach((v) => {
+      result.push(v);
     });
   }
-  console.log(vwap[vwap.length - 2]);
-  return vwap;
+
+  return result;
 }
 
-const calculateVWAP = (klineObjs: KlineObj[]) => {
+function calculateVWAP(klineObjs: KlineObj[]) {
   const res: any[] = [];
   for (let i = 0; i < klineObjs.length; i++) {
     let totalVolume = 0.0;
@@ -87,11 +82,11 @@ const calculateVWAP = (klineObjs: KlineObj[]) => {
   }
   console.log(res);
   return res;
-};
+}
 
-const calculateFirstStdDevFromVWAP = (arr, vwap) => {
-  const prices = arr.map((a) => Number(a.close));
-  const volumes = arr.map((a) => Number(a.volume));
+const calculateFirstStdDevFromVWAP = (objs: KlineObj[], vwap: number) => {
+  const prices = objs.map((o) => Number(o.hlc3));
+  const volumes = objs.map((o) => Number(o.quoteVolume));
 
   // Calculate squared deviations from VWAP with volume weighting
   const weightedSquaredDeviations = prices.map((price, index) => {

@@ -8,6 +8,5 @@ export function calculateStartTime(
   const now = new Date().getTime();
   const totalInterval = numCandles * candleInterval * 60 * 1000; // Convert minutes
   const startTime = now - totalInterval;
-  print(ConsoleColors.magenta, `${UnixToTime(startTime)} ${UnixToTime(now)}`);
   return startTime;
 }

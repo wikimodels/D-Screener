@@ -3,9 +3,10 @@ import { FundingRate } from "../../models/binance/funding-rate.ts";
 import { KlineObj } from "../../models/binance/kline.ts";
 import { LiquidationRecord } from "../../models/binance/liquidation-record.ts";
 import { OpenInterest, OpenInterestHist } from "../../models/binance/oi.ts";
+const kv = await Deno.openKv();
 
-export async function listenQueues() {
-  const kv = await Deno.openKv();
+export function listenQueues() {
+  let counter = 0;
   try {
     kv.listenQueue(async (msg: QueueMsg) => {
       if (msg.queueName == "loadInitalKlineObjToKv") {
@@ -72,7 +73,6 @@ export async function listenQueues() {
           prevRecord.nextFundingTime != obj.nextFundingTime
         ) {
           await kv.set([`Fr_${msg.timeframe}`, obj.symbol, closeTime], obj);
-          console.log("Fr inserted", obj.symbol, obj.fr);
         }
       }
 

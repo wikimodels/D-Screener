@@ -1,13 +1,16 @@
-import { datetime } from "https://deno.land/x/ptera@v1.0.2/mod.ts";
-// deno-lint-ignore-file no-explicit-any
+import * as _ from "https://cdn.skypack.dev/lodash";
+
 import { CandlesRepo } from "../../../models/binance/candles-repo.ts";
 import { getAllCoins } from "../../utils/get-coins.ts";
 import { getLiqBySymbol } from "../force-order/get-liq-by-symbol.ts";
 import { getKlineBySymbol } from "../kline/get-kline-by-symbol.ts";
 import { getFrBySymbol } from "../mark-price-update/get-fr-by-symbol.ts";
 import { getOiBySymbol } from "../oi/get-oi-by-symbol.ts";
+import { ConsoleColors, print } from "../../utils/print.ts";
 
-export async function createCandlesRepo(timeframe: string) {
+export async function createCandlesRepo(
+  timeframe: string
+): Promise<CandlesRepo[]> {
   const coins = await getAllCoins();
   const candleRepo: CandlesRepo[] = [];
   for (let i = 0; i < coins.length; i++) {
@@ -16,7 +19,8 @@ export async function createCandlesRepo(timeframe: string) {
       tf: timeframe,
       data: [],
     };
-    const kline = await getKlineBySymbol(timeframe, coins[i].symbol);
+    let kline = await getKlineBySymbol(timeframe, coins[i].symbol);
+
     const fr = await getFrBySymbol(timeframe, coins[i].symbol);
     const oi = await getOiBySymbol(timeframe, coins[i].symbol);
     const liq = await getLiqBySymbol(timeframe, coins[i].symbol);
@@ -37,9 +41,17 @@ export async function createCandlesRepo(timeframe: string) {
         }
       });
     });
+    kline = _.orderBy(kline, "openTime");
     repo.data = [...kline];
+    print(
+      ConsoleColors.magenta,
+      `KVDB --> ${kline[0].symbol} loaded ${kline.length} `
+    );
     candleRepo.push(repo);
   }
-
+  print(
+    ConsoleColors.magenta,
+    `KVDB --> totally loaded ${candleRepo.length} coins`
+  );
   return candleRepo;
 }

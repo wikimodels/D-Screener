@@ -36,7 +36,11 @@ export async function loadInitalKlineData(
       acc.push(obj);
       return acc;
     }, []);
-
+    if (klineObjs.length < Number(SYNQ.loadInitalKlineData.numCandles)) {
+      console.error(
+        `${symbol} --> NOT ALL DATA LOADED! Needed: ${SYNQ.loadInitalKlineData.numCandles}. Got ${klineObjs.length}`
+      );
+    }
     return klineObjs;
   } catch (error) {
     console.log(error);
