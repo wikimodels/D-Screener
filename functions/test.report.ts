@@ -6,15 +6,16 @@ import { calculateChMf } from "../indicators/chmf.ts";
 import { KlineObj } from "../models/binance/kline.ts";
 
 import {
+  calculateDailyVwap,
   calculateWeeklyVWAP,
   isStartOfMonday,
   splitByWeeks,
-} from "../indicators/w-vwap.ts";
+} from "../indicators/vwap.ts";
 import { CandlesRepo } from "../models/binance/candles-repo.ts";
 
 export async function testReport() {
-  let shit: CandlesRepo[] = await createCandlesRepo("1h");
-  let result = calculateWeeklyVWAP(shit[0].data);
+  let shit: CandlesRepo[] = await createCandlesRepo("15m");
+  let result = calculateDailyVwap(shit[0].data);
   let res = [];
   result.forEach((r) => {
     res.push({
