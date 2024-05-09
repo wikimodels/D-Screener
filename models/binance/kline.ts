@@ -34,6 +34,17 @@ export interface KlineObj {
     buyValue: number;
   };
   vzo: number;
+  cvd: number;
+  changes: {
+    priceChg: number;
+    cvdChg: number;
+    oiChg: number;
+    volumeChg: number;
+  };
+  avgTradeDayVol: number;
+  avgTradeDayBuyVol: number;
+  avgTradeDaySellVol: number;
+  avgTradeDayTrades: number;
 }
 
 export interface KlineData {

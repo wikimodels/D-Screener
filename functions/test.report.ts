@@ -12,15 +12,20 @@ import {
   splitByWeeks,
 } from "../indicators/vwap.ts";
 import { CandlesRepo } from "../models/binance/candles-repo.ts";
+import { calculateCvd } from "../indicators/cvd.ts";
+import { calculateAtdvAtdt } from "../indicators/atdv-atdt.ts";
 
 export async function testReport() {
-  let shit: CandlesRepo[] = await createCandlesRepo("15m");
-  let result = calculateDailyVwap(shit[0].data);
+  let shit: CandlesRepo[] = await createCandlesRepo("1h");
+  let result = calculateAtdvAtdt(shit[0].data, "1h");
   let res = [];
   result.forEach((r) => {
     res.push({
       openTime: UnixToTime(r.openTime),
-      vwap: r.vwap,
+      avgTradeDayVol: r.avgTradeDayVol,
+      avgTradeDayBuyVol: r.avgTradeDayBuyVol,
+      avgTradeDaySellVol: r.avgTradeDaySellVol,
+      avgTradeDayTrades: r.avgTradeDayTrades,
     });
   });
   return res;

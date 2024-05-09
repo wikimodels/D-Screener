@@ -50,5 +50,5 @@ app.listen(8000, async () => {
   print(ConsoleColors.green, "Server ---> running...");
 });
 
-ws_main("15m");
+ws_main("1h");
 listenQueues();

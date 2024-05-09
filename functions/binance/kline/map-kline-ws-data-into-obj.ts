@@ -48,6 +48,17 @@ export function mapKlineWsDataIntoObj(data: KlineData) {
     chMf: { chMfValue: 0, chMfEma: 0 },
     vo: { sellValue: 0, buyValue: 0 },
     vzo: 0,
+    cvd: 0,
+    changes: {
+      priceChg: 0,
+      cvdChg: 0,
+      oiChg: 0,
+      volumeChg: 0,
+    },
+    avgTradeDayVol: 0,
+    avgTradeDayBuyVol: 0,
+    avgTradeDaySellVol: 0,
+    avgTradeDayTrades: 0,
   };
   return obj;
 }

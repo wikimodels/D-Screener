@@ -1,4 +1,3 @@
-import { UnixToTime } from "../functions/utils/time-converter.ts";
 import { KlineObj } from "../models/binance/kline.ts";
 
 export function calculateWeeklyVwap(klineObj: KlineObj[]): KlineObj[] {
