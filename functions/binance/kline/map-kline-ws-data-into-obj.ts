@@ -54,11 +54,24 @@ export function mapKlineWsDataIntoObj(data: KlineData) {
       cvdChg: 0,
       oiChg: 0,
       volumeChg: 0,
+      avgTradeDayVolChg: 0,
+      avgTradeDayBuyVolChg: 0,
+      avgTradeDaySellVolChg: 0,
+      avgTradeDayTradesChg: 0,
     },
-    avgTradeDayVol: 0,
-    avgTradeDayBuyVol: 0,
-    avgTradeDaySellVol: 0,
-    avgTradeDayTrades: 0,
+    ratios: {
+      liq24hRatio: 0,
+      volRatio2hTo24h: 0,
+      volSellRatio2hTo24h: 0,
+      volBuyRatio2hTo24h: 0,
+      tradesRatioTo24h: 0,
+    },
+    avg: {
+      avgTradeDayVol: 0,
+      avgTradeDayBuyVol: 0,
+      avgTradeDaySellVol: 0,
+      avgTradeDayTrades: 0,
+    },
   };
   return obj;
 }

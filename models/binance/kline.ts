@@ -40,11 +40,24 @@ export interface KlineObj {
     cvdChg: number;
     oiChg: number;
     volumeChg: number;
+    avgTradeDayVolChg: number;
+    avgTradeDayBuyVolChg: number;
+    avgTradeDaySellVolChg: number;
+    avgTradeDayTradesChg: number;
   };
-  avgTradeDayVol: number;
-  avgTradeDayBuyVol: number;
-  avgTradeDaySellVol: number;
-  avgTradeDayTrades: number;
+  ratios: {
+    liq24hRatio: number;
+    volRatio2hTo24h: number;
+    volSellRatio2hTo24h: number;
+    volBuyRatio2hTo24h: number;
+    tradesRatioTo24h: number;
+  };
+  avg: {
+    avgTradeDayVol: number;
+    avgTradeDayBuyVol: number;
+    avgTradeDaySellVol: number;
+    avgTradeDayTrades: number;
+  };
 }
 
 export interface KlineData {

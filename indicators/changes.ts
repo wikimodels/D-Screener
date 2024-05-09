@@ -1,4 +1,4 @@
-import { KlineObj } from "../../models/binance/kline.ts";
+import { KlineObj } from "../models/binance/kline.ts";
 
 export function calculateChanges(klineObjs: KlineObj[]) {
   for (let i = 1; i < klineObjs.length; i++) {
@@ -13,6 +13,18 @@ export function calculateChanges(klineObjs: KlineObj[]) {
     );
     klineObjs[i].changes.volumeChg = getPercentageDif(
       klineObjs[i - 1].baseVolume - klineObjs[i].baseVolume
+    );
+    klineObjs[i].changes.avgTradeDayBuyVolChg = getPercentageDif(
+      klineObjs[i - 1].avgTradeDayBuyVol - klineObjs[i].avgTradeDayBuyVol
+    );
+    klineObjs[i].changes.avgTradeDaySellVolChg = getPercentageDif(
+      klineObjs[i - 1].avgTradeDaySellVol - klineObjs[i].avgTradeDaySellVol
+    );
+    klineObjs[i].changes.avgTradeDayTradesChg = getPercentageDif(
+      klineObjs[i - 1].avgTradeDayTrades - klineObjs[i].avgTradeDayTrades
+    );
+    klineObjs[i].changes.avgTradeDayVolChg = getPercentageDif(
+      klineObjs[i - 1].avgTradeDayVol - klineObjs[i].avgTradeDayVol
     );
   }
 }
