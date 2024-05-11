@@ -1,4 +1,4 @@
-import { LiquidationRecord } from "../../../models/binance/liquidation-record.ts";
+import { LiquidationRecord } from "../../models/shared/liquidation-record.ts";
 
 export function resetLiquidationRecord(symbol: string): LiquidationRecord {
   const obj: LiquidationRecord = {

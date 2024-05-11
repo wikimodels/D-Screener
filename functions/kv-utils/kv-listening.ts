@@ -1,8 +1,9 @@
 import { QueueMsg } from "./../../models/queue-task.ts";
 import { FundingRate } from "../../models/binance/funding-rate.ts";
-import { KlineObj } from "../../models/binance/kline.ts";
-import { LiquidationRecord } from "../../models/binance/liquidation-record.ts";
-import { OpenInterest, OpenInterestHist } from "../../models/binance/oi.ts";
+import { KlineObj } from "../../models/shared/kline.ts";
+import { LiquidationRecord } from "../../models/shared/liquidation-record.ts";
+import { OpenInterest, OpenInterestHist } from "../../models/shared/oi.ts";
+import { PublicTradeRecord } from "../../models/bybit/public-trade-record.ts";
 const kv = await Deno.openKv();
 
 export function listenQueues() {
@@ -101,6 +102,19 @@ export function listenQueues() {
           ]);
         if (!record.value) {
           await kv.set([`Oi_${msg.timeframe}`, obj.symbol, closeTime], obj);
+        }
+      }
+      if (msg.queueName == "insertPublicTradeRecord") {
+        const obj: PublicTradeRecord = msg.data.dataObj as PublicTradeRecord;
+        const closeTime: number = msg.data.closeTime;
+        const record: Deno.KvEntryMaybe<PublicTradeRecord> =
+          await kv.get<PublicTradeRecord>([
+            `Pt_${msg.timeframe}`,
+            obj.symbol,
+            closeTime,
+          ]);
+        if (!record.value) {
+          await kv.set([`Pt_${msg.timeframe}`, obj.symbol, closeTime], obj);
         }
       }
     });

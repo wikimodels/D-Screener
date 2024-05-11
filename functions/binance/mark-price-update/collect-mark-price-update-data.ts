@@ -6,7 +6,7 @@ import {
 import { MarkPriceUpdateData } from "../../../models/binance/mark-price-update.ts";
 import { load } from "https://deno.land/std@0.223.0/dotenv/mod.ts";
 import { print, ConsoleColors } from "../../utils/print.ts";
-import { getTimeframeControl } from "../timeframe-control/timeframe-control.ts";
+import { getTimeframeControl } from "../timeframe-control.ts";
 
 import { enqueue } from "../../kv-utils/kv-enqueue.ts";
 

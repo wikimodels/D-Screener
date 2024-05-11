@@ -1,4 +1,4 @@
-import { KlineObj } from "./kline.ts";
+import { KlineObj } from "../shared/kline.ts";
 
 export interface CandlesRepo {
   symbol: string;

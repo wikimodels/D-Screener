@@ -7,15 +7,15 @@ import {
   ForceOrderData,
   ForceOrderObj,
 } from "../../../models/binance/force-order.ts";
-import { getTimeframeControl } from "../timeframe-control/timeframe-control.ts";
+import { getTimeframeControl } from "../timeframe-control.ts";
 import { mapForceOrderDataToObj } from "./map-force-order-data-to-obj.ts";
 import { ConsoleColors } from "./../../utils/print.ts";
 
 import { load } from "https://deno.land/std@0.223.0/dotenv/mod.ts";
 import { print } from "../../utils/print.ts";
-import { LiquidationRecord } from "../../../models/binance/liquidation-record.ts";
-import { resetLiquidationRecord } from "./reset-liquidation-record.ts";
-import { updateLiquidationRecord } from "./update-liquidation-record.ts";
+import { LiquidationRecord } from "../../../models/shared/liquidation-record.ts";
+import { resetLiquidationRecord } from "../../shared/reset-liquidation-record.ts";
+import { updateLiquidationRecord } from "../../shared/update-liquidation-record.ts";
 import { enqueue } from "../../kv-utils/kv-enqueue.ts";
 import { QueueMsg } from "../../../models/queue-task.ts";
 
@@ -29,7 +29,10 @@ export function collectForceOrderData(symbol: string, timeframe: string) {
   );
 
   ws.on("open", function () {
-    print(ConsoleColors.yellow, `${symbol} forceOrder-ws --> connected`);
+    print(
+      ConsoleColors.yellow,
+      `binance ${symbol} forceOrder-ws --> connected`
+    );
   });
 
   ws.on("message", async function (message: any) {

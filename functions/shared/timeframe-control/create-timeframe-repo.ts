@@ -1,4 +1,4 @@
-import { TimeframeControl } from "../../../models/binance/timeframe-control.ts";
+import { TimeframeControl } from "../../../models/shared/timeframe-control.ts";
 import { getAllCoins } from "../../utils/get-coins.ts";
 
 export async function createTimeframeRepo(): Promise<TimeframeControl[]> {

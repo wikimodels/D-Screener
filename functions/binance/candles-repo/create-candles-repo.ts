@@ -7,6 +7,7 @@ import { getKlineBySymbol } from "../kline/get-kline-by-symbol.ts";
 import { getFrBySymbol } from "../mark-price-update/get-fr-by-symbol.ts";
 import { getOiBySymbol } from "../oi/get-oi-by-symbol.ts";
 import { ConsoleColors, print } from "../../utils/print.ts";
+import { getPublicTradeBySymbol } from "../../bybit/public-trade/get-public-trade-by-symbol.ts";
 
 export async function createCandlesRepo(
   timeframe: string
@@ -24,6 +25,7 @@ export async function createCandlesRepo(
     const fr = await getFrBySymbol(timeframe, coins[i].symbol);
     const oi = await getOiBySymbol(timeframe, coins[i].symbol);
     const liq = await getLiqBySymbol(timeframe, coins[i].symbol);
+    const pt = await getPublicTradeBySymbol(timeframe, coins[i].symbol);
     kline.forEach((k) => {
       fr.forEach((el) => {
         if (k.closeTime == el.closeTime) {
@@ -38,6 +40,15 @@ export async function createCandlesRepo(
       liq.forEach((el) => {
         if (k.closeTime == el.closeTime) {
           k.liquidations = el;
+        }
+      });
+      pt.forEach((el) => {
+        if (k.closeTime == el.closeTime) {
+          k.numberOfTrades = el.numberOfTrades;
+          k.takerBuyBaseVolume = el.takerBuyBaseVolume;
+          k.takerSellBaseVolume = el.takerSellBaseVolume;
+          k.takerBuyQuoteVolume = el.takerBuyQuoteVolume;
+          k.takerSellQuoteVolume = el.takerSellQuoteVolume;
         }
       });
     });

@@ -1,4 +1,4 @@
-import { FundingRate } from "./funding-rate.ts";
+import { FundingRate } from "../binance/funding-rate.ts";
 import { LiquidationRecord } from "./liquidation-record.ts";
 import { OpenInterest } from "./oi.ts";
 

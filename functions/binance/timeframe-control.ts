@@ -1,5 +1,5 @@
-import { TimeframeControl } from "../../../models/binance/timeframe-control.ts";
-import { createTimeframeRepo } from "./create-timeframe-repo.ts";
+import { TimeframeControl } from "../../models/shared/timeframe-control.ts";
+import { createTimeframeRepo } from "../shared/timeframe-control/create-timeframe-repo.ts";
 
 const tfControls: TimeframeControl[] = await createTimeframeRepo();
 

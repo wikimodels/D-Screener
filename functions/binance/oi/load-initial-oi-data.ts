@@ -1,8 +1,8 @@
 import { load } from "https://deno.land/std@0.223.0/dotenv/mod.ts";
 import { generateBinanceSignature } from "../../utils/generate-binance-signature.ts";
-import { OpenInterestHist } from "../../../models/binance/oi.ts";
+import { OpenInterestHist } from "../../../models/shared/oi.ts";
 import { UnixToTime } from "../../utils/time-converter.ts";
-import { SYNQ } from "../timeframe-control/synq.ts";
+import { SYNQ } from "../../shared/timeframe-control/synq.ts";
 
 const env = await load();
 

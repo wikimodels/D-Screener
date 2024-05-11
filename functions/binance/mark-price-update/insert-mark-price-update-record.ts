@@ -1,5 +1,5 @@
 import { candlesRepo } from "../candles-repo/create-candles-repo.ts";
-import { TimeframeControl } from "../../../models/binance/timeframe-control.ts";
+import { TimeframeControl } from "../../../models/shared/timeframe-control.ts";
 import { MarkPriceUpdateObj } from "../../../models/binance/mark-price-update.ts";
 export function insertMarkPriceUpdateRecord(
   tfControl: TimeframeControl,

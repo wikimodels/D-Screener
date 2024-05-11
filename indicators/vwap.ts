@@ -1,4 +1,4 @@
-import { KlineObj } from "../models/binance/kline.ts";
+import { KlineObj } from "../models/shared/kline.ts";
 
 export function calculateWeeklyVwap(klineObj: KlineObj[]): KlineObj[] {
   const weeks = splitByWeeks(klineObj);

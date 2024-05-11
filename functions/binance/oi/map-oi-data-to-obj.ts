@@ -1,7 +1,4 @@
-import {
-  OpenInterest,
-  OpenInterestData,
-} from "./../../../models/binance/oi.ts";
+import { OpenInterest, OpenInterestData } from "../../../models/shared/oi.ts";
 export function mapOiDataToObj(
   oiData: OpenInterestData,
   closeTime: number

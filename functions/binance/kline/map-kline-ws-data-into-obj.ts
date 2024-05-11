@@ -1,4 +1,4 @@
-import { KlineData, KlineObj } from "../../../models/binance/kline.ts";
+import { KlineData, KlineObj } from "../../../models/shared/kline.ts";
 
 export function mapKlineWsDataIntoObj(data: KlineData) {
   const obj: KlineObj = {

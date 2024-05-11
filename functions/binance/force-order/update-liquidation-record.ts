@@ -1,5 +1,5 @@
 import { ForceOrderObj } from "../../../models/binance/force-order.ts";
-import { LiquidationRecord } from "../../../models/binance/liquidation-record.ts";
+import { LiquidationRecord } from "../../../models/shared/liquidation-record.ts";
 
 export function updateLiquidationRecord(
   record: LiquidationRecord,

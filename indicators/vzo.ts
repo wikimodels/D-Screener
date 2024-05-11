@@ -1,4 +1,4 @@
-import { KlineObj } from "../models/binance/kline.ts";
+import { KlineObj } from "../models/shared/kline.ts";
 import { calculateEma } from "./ema.ts";
 
 export function calculateVZO(klineObjs: KlineObj[]) {

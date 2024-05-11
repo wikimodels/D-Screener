@@ -1,5 +1,5 @@
-import { SYNQ } from "../functions/binance/timeframe-control/synq.ts";
-import { KlineObj } from "../models/binance/kline.ts";
+import { SYNQ } from "../functions/shared/timeframe-control/synq.ts";
+import { KlineObj } from "../models/shared/kline.ts";
 import { calculateEma } from "./ema.ts";
 
 interface BasicData {

@@ -3,7 +3,7 @@ import { createCandlesRepo } from "./binance/candles-repo/create-candles-repo.ts
 import * as _ from "https://cdn.skypack.dev/lodash";
 import { UnixToTime } from "./utils/time-converter.ts";
 import { calculateChMf } from "../indicators/chmf.ts";
-import { KlineObj } from "../models/binance/kline.ts";
+import { KlineObj } from "../models/shared/kline.ts";
 
 import {
   calculateDailyVwap,

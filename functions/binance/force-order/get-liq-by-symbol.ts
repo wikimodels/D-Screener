@@ -1,5 +1,5 @@
-import { KlineObj } from "../../../models/binance/kline.ts";
-import { LiquidationRecord } from "../../../models/binance/liquidation-record.ts";
+import { KlineObj } from "../../../models/shared/kline.ts";
+import { LiquidationRecord } from "../../../models/shared/liquidation-record.ts";
 
 export async function getLiqBySymbol(
   timeframe: string,

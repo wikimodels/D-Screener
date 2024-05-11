@@ -1,5 +1,5 @@
 import { load } from "https://deno.land/std@0.223.0/dotenv/mod.ts";
-import { OpenInterest, OpenInterestData } from "../../../models/binance/oi.ts";
+import { OpenInterest, OpenInterestData } from "../../../models/shared/oi.ts";
 import { UnixToTime } from "../../utils/time-converter.ts";
 import { mapOiDataToObj } from "./map-oi-data-to-obj.ts";
 import { enqueue } from "../../kv-utils/kv-enqueue.ts";

@@ -3,18 +3,18 @@ import {
   WebSocketClient,
   StandardWebSocketClient,
 } from "https://deno.land/x/websocket@v0.1.4/mod.ts";
-import { KlineData, KlineObj } from "../../../models/binance/kline.ts";
-import { setTimeframeControl } from "../timeframe-control/timeframe-control.ts";
+import { KlineData, KlineObj } from "../../../models/shared/kline.ts";
+import { setTimeframeControl } from "../timeframe-control.ts";
 
 import { load } from "https://deno.land/std@0.223.0/dotenv/mod.ts";
 import { ConsoleColors, print } from "../../utils/print.ts";
 import { collectOiData } from "../oi/collect-oi-data.ts";
 
-import { SYNQ } from "../timeframe-control/synq.ts";
+import { SYNQ } from "../../shared/timeframe-control/synq.ts";
 
 import { enqueue } from "../../kv-utils/kv-enqueue.ts";
-import { TimeframeControl } from "../../../models/binance/timeframe-control.ts";
-import { oiRecordExists } from "../oi/oi-record-exists.ts";
+import { TimeframeControl } from "../../../models/shared/timeframe-control.ts";
+import { oiRecordExists } from "../../shared/oi-record-exists.ts";
 import { mapKlineWsDataIntoObj } from "./map-kline-ws-data-into-obj.ts";
 import { QueueMsg } from "../../../models/queue-task.ts";
 

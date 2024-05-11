@@ -1,5 +1,5 @@
-import { KlineObj } from "../../../models/binance/kline.ts";
-import { OpenInterest } from "../../../models/binance/oi.ts";
+import { KlineObj } from "../../models/shared/kline.ts";
+import { OpenInterest } from "../../models/shared/oi.ts";
 
 export async function oiRecordExists(obj: KlineObj, timeframe: string) {
   const kv = await Deno.openKv();

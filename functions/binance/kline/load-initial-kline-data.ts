@@ -1,8 +1,8 @@
 // deno-lint-ignore-file no-explicit-any
 import { load } from "https://deno.land/std@0.223.0/dotenv/mod.ts";
-import { KlineObj } from "../../../models/binance/kline.ts";
+import { KlineObj } from "../../../models/shared/kline.ts";
 import { calculateStartTime } from "../../utils/calculate-start-time.ts";
-import { SYNQ } from "../timeframe-control/synq.ts";
+import { SYNQ } from "../../shared/timeframe-control/synq.ts";
 import { mapKlineHttpDataToObj } from "./map-kline-http-data-to-obj%20copy.ts";
 import { getCandleInterval } from "../../utils/get-candle-interval.ts";
 

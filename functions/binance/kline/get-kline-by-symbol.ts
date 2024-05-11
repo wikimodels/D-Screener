@@ -1,4 +1,4 @@
-import { KlineObj } from "../../../models/binance/kline.ts";
+import { KlineObj } from "../../../models/shared/kline.ts";
 
 export async function getKlineBySymbol(
   timeframe: string,

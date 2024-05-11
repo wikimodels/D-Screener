@@ -1,4 +1,4 @@
-import { KlineObj } from "./../models/binance/kline.ts";
+import { KlineObj } from "../models/shared/kline.ts";
 
 export function calculateCvd(klineObjs: KlineObj[]): KlineObj[] {
   let previousCVD = 0;

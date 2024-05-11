@@ -1,4 +1,4 @@
-import { KlineObj } from "../models/binance/kline.ts";
+import { KlineObj } from "../models/shared/kline.ts";
 export function calculateAtdvAtdt(klineObjs: KlineObj[], timeframe: string) {
   const windowSize = timeframe == "1h" ? 24 : 24 * 15;
   if (windowSize > klineObjs.length) {

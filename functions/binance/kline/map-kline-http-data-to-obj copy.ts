@@ -1,4 +1,4 @@
-import { KlineObj } from "../../../models/binance/kline.ts";
+import { KlineObj } from "../../../models/shared/kline.ts";
 
 export function mapKlineHttpDataToObj(data: any[], symbol: string): KlineObj {
   const obj: KlineObj = {
