@@ -1,4 +1,2 @@
-symbol
-ETHUSDT,
-ATOMUSDT,
-SOLUSDT
+symbol, exchange 
+SOLUSDT,"by"

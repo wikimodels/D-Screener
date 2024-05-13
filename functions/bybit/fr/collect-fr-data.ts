@@ -5,6 +5,8 @@ import { QueueMsg } from "../../../models/queue-task.ts";
 import { enqueue } from "../../kv-utils/kv-enqueue.ts";
 import { mapFundingRateDataToObj } from "./map-mark-update-data-to-obj.ts";
 import { FundingRate } from "../../../models/binance/funding-rate.ts";
+import { KvOps } from "../../kv-utils/kv-ops.ts";
+import { UnixToTime } from "../../utils/time-converter.ts";
 
 const env = await load();
 
@@ -29,12 +31,13 @@ export async function collectFrData(
     const res = data.result.list[0];
 
     const obj: FundingRate = mapFundingRateDataToObj(res, closeTime);
+
     const msg: QueueMsg = {
       data: {
         closeTime: closeTime,
         dataObj: obj as FundingRate,
       },
-      queueName: "insertFundingRateRecord",
+      queueName: KvOps.saveFrObjToKv,
       timeframe: timeframe,
     };
 

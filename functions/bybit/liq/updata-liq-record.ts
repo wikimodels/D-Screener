@@ -6,12 +6,12 @@ export function updateLiquidationRecord(
   data: LiquidationData,
   closeTime: number
 ): LiquidationRecord {
-  if (data.side == "BUY") {
+  if (data.side == "Buy") {
     record.buy.liqSum += data.price * data.size;
     record.buy.counter += 1;
   }
 
-  if (obj.order.side == "SELL") {
+  if (data.side == "Sell") {
     record.sell.liqSum += data.price * data.size;
     record.sell.counter += 1;
   }

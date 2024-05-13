@@ -4,6 +4,7 @@ import { UnixToTime } from "../../utils/time-converter.ts";
 import { mapOiDataToObj } from "./map-oi-data-to-obj.ts";
 import { enqueue } from "../../kv-utils/kv-enqueue.ts";
 import { QueueMsg } from "../../../models/queue-task.ts";
+import { KvOps } from "../../kv-utils/kv-ops.ts";
 
 const env = await load();
 
@@ -25,7 +26,7 @@ export async function collectOiData(
 
     const msg: QueueMsg = {
       timeframe: timeframe,
-      queueName: "insertOiRecord",
+      queueName: KvOps.saveOiObjToKv,
       data: {
         dataObj: obj as OpenInterest,
         closeTime: closeTime,

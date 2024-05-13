@@ -1,8 +1,12 @@
 import { load } from "https://deno.land/std@0.223.0/dotenv/mod.ts";
 import { generateBinanceSignature } from "../../utils/generate-binance-signature.ts";
-import { OpenInterestHist } from "../../../models/shared/oi.ts";
+import { OpenInterest, OpenInterestHist } from "../../../models/shared/oi.ts";
 import { UnixToTime } from "../../utils/time-converter.ts";
 import { SYNQ } from "../../shared/timeframe-control/synq.ts";
+import { QueueMsg } from "../../../models/queue-task.ts";
+import { mapOiHistDataToOiObjs } from "../../shared/map-oi-hist-data-to-oi-objs.ts";
+import { enqueue } from "../../kv-utils/kv-enqueue.ts";
+import { KvOps } from "../../kv-utils/kv-ops.ts";
 
 const env = await load();
 
@@ -30,7 +34,19 @@ export async function loadInitialOiData(symbol: string, timeframe: string) {
       throw new Error(`Failed to fetch data: ${response.statusText}`);
     }
     const data: OpenInterestHist[] = await response.json();
-    return data;
+    const objs: OpenInterest[] = mapOiHistDataToOiObjs(data);
+
+    objs.forEach(async (d) => {
+      const msg: QueueMsg = {
+        timeframe: timeframe,
+        queueName: KvOps.saveOiObjToKv,
+        data: {
+          dataObj: d as OpenInterest,
+          closeTime: d.closeTime,
+        },
+      };
+      await enqueue(msg);
+    });
   } catch (error) {
     console.log(error);
     throw error;

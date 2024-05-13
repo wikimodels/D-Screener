@@ -1,71 +1,80 @@
 // deno-lint-ignore-file no-explicit-any
-import { WebsocketClient } from "npm:bybit-api";
+import {
+  WebSocketClient,
+  StandardWebSocketClient,
+} from "https://deno.land/x/websocket@v0.1.4/mod.ts";
 
+import { load } from "https://deno.land/std@0.223.0/dotenv/mod.ts";
 import { ConsoleColors, print } from "../../utils/print.ts";
 
 import { enqueue } from "../../kv-utils/kv-enqueue.ts";
 
 import { QueueMsg } from "../../../models/queue-task.ts";
+
+import { PublicTradeObj } from "../../../models/bybit/public-trade-data.ts";
+
+import { mapPtDataToObj } from "./map-public-trade-data-to-obj.ts";
+import { resetPublicTradeRecord } from "./reset-public-trade-record.ts";
+import { updatePublicTradeRecord } from "./update-public-trade-record.ts";
+import { PublicTradeRecord } from "../../../models/bybit/public-trade-record.ts";
+
+import { UnixToTime } from "../../utils/time-converter.ts";
+import { isCandleIsUp } from "../../utils/is-candle-up.ts";
+import { KvOps } from "../../kv-utils/kv-ops.ts";
 import { getTimeframeControl } from "../timeframe-control.ts";
 
-import { PublicTradeRecord } from "../../../models/bybit/public-trade-record.ts";
-import { PublicTradeObj } from "../../../models/bybit/public-trade-data.ts";
-import { resetPublicTradeRecord } from "./reset-public-trade-record.ts";
-import { mapPtDataToObj } from "./map-public-trade-data-to-obj.ts";
-import { updatePublicTradeRecord } from "./update-public-trade-record.ts";
+const env = await load();
 
-const ws = new WebsocketClient({
-  testnet: false,
-  market: "v5",
-  reconnectTimeout: 500,
-  pingInterval: 30 * 1000,
-});
-
-export function collectPublicTradData(symbol: string, timeframe: string) {
+export function collectPublicTradeData(symbol: string, timeframe: string) {
+  const url = `${env["BYBIT_FS_WS"]}`;
+  const ws: WebSocketClient = new StandardWebSocketClient(url);
   let ptRecord: PublicTradeRecord = resetPublicTradeRecord(symbol);
 
-  ws.subscribeV5(`publicTrade.${symbol}`, "linear");
-
-  ws.on("open", function () {
-    print(ConsoleColors.magenta, `${symbol} bybit pt-ws --> connected`);
-  });
-
-  ws.on("update", async function (message: any) {
-    const obj: PublicTradeObj = mapPtDataToObj(JSON.parse(message.data));
-
+  setInterval(async () => {
     const tfControl = getTimeframeControl(symbol);
-    ptRecord = updatePublicTradeRecord(
-      ptRecord,
-      obj,
-      tfControl?.closeTime || 0
-    );
-
-    if (tfControl?.isClosed == true) {
-      ptRecord.closeTime = tfControl?.closeTime;
+    if (isCandleIsUp(timeframe)) {
+      ptRecord.closeTime = tfControl?.closeTime || new Date().getTime() - 1500;
       const msg: QueueMsg = {
         timeframe: timeframe,
-        queueName: "insertPublicTradeRecord",
+        queueName: KvOps.savePtObjToKv,
         data: {
           dataObj: ptRecord,
-          closeTime: tfControl.closeTime,
+          closeTime: ptRecord.closeTime,
         },
       };
       await enqueue(msg);
       ptRecord = resetPublicTradeRecord(symbol);
     }
-  });
-  // Optional: Listen to responses to websocket queries (e.g. the response after subscribing to a topic)
-  ws.on("response", (response) => {
-    //console.log("response", response);
+  }, 900);
+
+  ws.on("open", function () {
+    print(ConsoleColors.magenta, `BYBIT:${symbol} pt-ws --> connected`);
+    ws.send(
+      JSON.stringify({ op: "subscribe", args: [`publicTrade.${symbol}`] })
+    );
   });
 
-  // Optional: Listen to connection close event. Unexpected connection closes are automatically reconnected.
-  ws.on("close", () => {
-    console.log("connection closed");
+  ws.on("message", function (message: any) {
+    const data = JSON.parse(message.data);
+    if (data.type && data.type == "snapshot") {
+      const objs: PublicTradeObj[] = mapPtDataToObj(data.data);
+      ptRecord = updatePublicTradeRecord(ptRecord, objs);
+    }
   });
 
-  // Optional: Listen to raw error events. Recommended.
-  ws.on("error", (err) => {
-    console.error("error", err);
+  ws.on("ping", (data: Uint8Array) => {
+    print(ConsoleColors.green, `${symbol} kline ---> ping`);
+    // Send a pong frame with the same payload
+    ws.send(data);
+  });
+
+  ws.on("error", function (error: Error) {
+    console.log(error);
+    //print(ConsoleColors.red, `${symbol} kline-ws is broken`);
+    //throw error;
+  });
+
+  ws.on("close", function () {
+    console.log("PublicTrade WS is closed");
   });
 }

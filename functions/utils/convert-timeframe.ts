@@ -1,4 +1,4 @@
-export function convertTimeframe(timeframe: string) {
+export function convertTimeframeFromStrToNum(timeframe: string): number {
   switch (timeframe) {
     case "1m":
       return 1;
@@ -13,4 +13,5 @@ export function convertTimeframe(timeframe: string) {
     case "4h":
       return 320;
   }
+  return 0;
 }

@@ -13,6 +13,7 @@ import { enqueue } from "../../kv-utils/kv-enqueue.ts";
 import { FundingRate } from "../../../models/binance/funding-rate.ts";
 import { QueueMsg } from "../../../models/queue-task.ts";
 import { mapMarkUpdateDataToObj } from "./map-mark-update-data-to-obj.ts";
+import { KvOps } from "../../kv-utils/kv-ops.ts";
 
 const env = await load();
 
@@ -37,7 +38,7 @@ export function collectMarkPriceData(symbol: string, timeframe: string) {
           closeTime: tfControl.closeTime,
           dataObj: obj as FundingRate,
         },
-        queueName: "insertFundingRateRecord",
+        queueName: KvOps.saveFrObjToKv,
         timeframe: timeframe,
       };
       await enqueue(msg);

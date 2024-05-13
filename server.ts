@@ -18,7 +18,7 @@ import { listenQueues } from "./functions/kv-utils/kv-listening.ts";
 import { KlineObj } from "./models/shared/kline.ts";
 import { ConsoleColors, print } from "./functions/utils/print.ts";
 import { assembleKline } from "./functions/binance/kline/assemble-kline.ts";
-import { ws_main } from "./ws-main.ts";
+import { ws_main } from "./bi-main.ts";
 import { calculateChMf } from "./indicators/chmf.ts";
 import { calculateVO } from "./indicators/vo.ts";
 import { loadInitalKlineData } from "./functions/binance/kline/load-initial-kline-data.ts";
@@ -56,6 +56,6 @@ app.listen(8000, async () => {
 });
 
 //loadInitialOiData("ETHUSDT", TF.m15);
-collectTickersData("ETHUSDT");
+//collectTickersData("ETHUSDT");
 // ws_main("5m");
 // listenQueues();

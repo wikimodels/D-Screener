@@ -6,6 +6,7 @@ export async function cleanKv() {
   let counter = 0;
   for await (const item of entries) {
     await kv.delete(item.key).then(() => {
+      console.log(item.key);
       counter += 1;
     });
   }

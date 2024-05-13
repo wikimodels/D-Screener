@@ -3,18 +3,19 @@ import { PublicTradeRecord } from "../../../models/bybit/public-trade-record.ts"
 
 export function updatePublicTradeRecord(
   ptRecord: PublicTradeRecord,
-  ptObj: PublicTradeObj,
-  closeTime: number
+  objs: PublicTradeObj[]
 ) {
-  ptRecord.closeTime == closeTime;
-  ptRecord.numberOfTrades += 1;
-  if (ptObj.side == "Buy") {
-    ptRecord.takerBuyBaseVolume = +ptObj.tradeSize;
-    ptRecord.takerBuyQuoteVolume = +ptObj.tradeSize * ptObj.tradeSize;
-  }
-  if (ptObj.side == "Sell") {
-    ptRecord.takerSellBaseVolume = +ptObj.tradeSize;
-    ptRecord.takerSellQuoteVolume = +ptObj.tradeSize * ptObj.tradeSize;
-  }
+  objs.forEach((o) => {
+    ptRecord.numberOfTrades += 1;
+    if (o.side == "Buy") {
+      ptRecord.takerBuyBaseVolume += o.tradeSize;
+      ptRecord.takerBuyQuoteVolume += o.tradeSize * o.tradePrice;
+    }
+    if (o.side == "Sell") {
+      ptRecord.takerSellBaseVolume += o.tradeSize;
+      ptRecord.takerSellQuoteVolume += o.tradeSize * o.tradePrice;
+    }
+  });
+
   return ptRecord;
 }

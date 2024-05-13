@@ -5,13 +5,13 @@ import { calculateStartTime } from "../../utils/calculate-start-time.ts";
 import { SYNQ } from "../../shared/timeframe-control/synq.ts";
 import { mapKlineHttpDataToObj } from "./map-kline-http-data-to-obj%20copy.ts";
 import { getCandleInterval } from "../../utils/get-candle-interval.ts";
+import { QueueMsg } from "../../../models/queue-task.ts";
+import { enqueue } from "../../kv-utils/kv-enqueue.ts";
+import { KvOps } from "../../kv-utils/kv-ops.ts";
 
 const env = await load();
 
-export async function loadInitalKlineData(
-  symbol: string,
-  timeframe: string
-): Promise<KlineObj[]> {
+export async function loadInitalKlineData(symbol: string, timeframe: string) {
   const numCandles: string = SYNQ.loadInitalKlineData.numCandles;
   const candleIntervalInMin: number = getCandleInterval(timeframe);
 
@@ -41,7 +41,18 @@ export async function loadInitalKlineData(
         `${symbol} --> NOT ALL DATA LOADED! Needed: ${SYNQ.loadInitalKlineData.numCandles}. Got ${klineObjs.length}`
       );
     }
-    return klineObjs;
+
+    klineObjs.forEach(async (obj) => {
+      const msg: QueueMsg = {
+        timeframe: timeframe,
+        queueName: KvOps.saveKlineObjToKv,
+        data: {
+          dataObj: obj,
+          closeTime: obj.closeTime,
+        },
+      };
+      await enqueue(msg);
+    });
   } catch (error) {
     console.log(error);
     throw error;

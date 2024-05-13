@@ -1,68 +1,78 @@
 // deno-lint-ignore-file no-explicit-any
-import { WebsocketClient } from "npm:bybit-api";
+import {
+  WebSocketClient,
+  StandardWebSocketClient,
+} from "https://deno.land/x/websocket@v0.1.4/mod.ts";
 
+import { load } from "https://deno.land/std@0.223.0/dotenv/mod.ts";
 import { ConsoleColors, print } from "../../utils/print.ts";
 
 import { enqueue } from "../../kv-utils/kv-enqueue.ts";
 
 import { QueueMsg } from "../../../models/queue-task.ts";
+import { UnixToTime } from "../../utils/time-converter.ts";
+import { isCandleIsUp } from "../../utils/is-candle-up.ts";
 import { LiquidationRecord } from "../../../models/shared/liquidation-record.ts";
 import { resetLiquidationRecord } from "../../shared/reset-liquidation-record.ts";
-import { getTimeframeControl } from "../timeframe-control.ts";
 import { LiquidationData } from "../../../models/bybit/liq-data.ts";
 import { updateLiquidationRecord } from "./updata-liq-record.ts";
+import { KvOps } from "../../kv-utils/kv-ops.ts";
+import { getTimeframeControl } from "../timeframe-control.ts";
 
-const ws = new WebsocketClient({
-  testnet: false,
-  market: "v5",
-  reconnectTimeout: 500,
-  pingInterval: 30 * 1000,
-});
+const env = await load();
 
 export function collectLiqData(symbol: string, timeframe: string) {
+  const url = `${env["BYBIT_FS_WS"]}`;
+  const ws: WebSocketClient = new StandardWebSocketClient(url);
   let liquidationRecord: LiquidationRecord = resetLiquidationRecord(symbol);
-  ws.subscribeV5(`liquidation.${symbol}`, "linear");
 
-  ws.on("open", function () {
-    print(ConsoleColors.green, `${symbol} bybit liq-ws --> connected`);
-  });
-
-  ws.on("update", async function (message: any) {
-    const data: LiquidationData = JSON.parse(message.data);
-
+  setInterval(async () => {
     const tfControl = getTimeframeControl(symbol);
-    liquidationRecord = updateLiquidationRecord(
-      liquidationRecord,
-      data,
-      tfControl?.closeTime || 0
-    );
-
-    if (tfControl?.isClosed == true) {
-      liquidationRecord.closeTime = tfControl?.closeTime;
+    if (isCandleIsUp(timeframe)) {
+      liquidationRecord.closeTime =
+        tfControl?.closeTime || new Date().getTime() - 1500;
       const msg: QueueMsg = {
         timeframe: timeframe,
-        queueName: "insertLiquidationRecord",
+        queueName: KvOps.saveLiqObjToKv,
         data: {
           dataObj: liquidationRecord,
-          closeTime: tfControl.closeTime,
+          closeTime: liquidationRecord.closeTime,
         },
       };
       await enqueue(msg);
       liquidationRecord = resetLiquidationRecord(symbol);
     }
-  });
-  // Optional: Listen to responses to websocket queries (e.g. the response after subscribing to a topic)
-  ws.on("response", (response) => {
-    //console.log("response", response);
+  }, 500);
+
+  ws.on("open", function () {
+    print(ConsoleColors.cyan, `BYBIT:${symbol} liq-ws --> connected`);
+    ws.send(
+      JSON.stringify({ op: "subscribe", args: [`liquidation.${symbol}`] })
+    );
   });
 
-  // Optional: Listen to connection close event. Unexpected connection closes are automatically reconnected.
-  ws.on("close", () => {
-    console.log("connection closed");
+  ws.on("message", function (message: any) {
+    const data = JSON.parse(message.data);
+
+    if (data.type && data.type == "snapshot") {
+      const _data: LiquidationData = data.data;
+      liquidationRecord = updateLiquidationRecord(liquidationRecord, _data, 0);
+    }
   });
 
-  // Optional: Listen to raw error events. Recommended.
-  ws.on("error", (err) => {
-    console.error("error", err);
+  ws.on("ping", (data: Uint8Array) => {
+    print(ConsoleColors.green, `${symbol} kline ---> ping`);
+    // Send a pong frame with the same payload
+    ws.send(data);
+  });
+
+  ws.on("error", function (error: Error) {
+    console.log(error);
+    //print(ConsoleColors.red, `${symbol} kline-ws is broken`);
+    //throw error;
+  });
+
+  ws.on("close", function () {
+    console.log("THIS shithole is closed");
   });
 }
