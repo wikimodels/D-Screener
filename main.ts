@@ -23,6 +23,3 @@ export async function main(timeframe: string) {
   biMain(timeframe, biCoins);
   byMain(timeframe, byCoins);
 }
-
-main(TF.m5);
-listenQueues();
