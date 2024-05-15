@@ -1,17 +1,18 @@
 import { UnixToTime } from "./functions/utils/time-converter.ts";
 import { FundingRate } from "./models/binance/funding-rate.ts";
 import { PublicTradeObj } from "./models/bybit/public-trade-data.ts";
+import { PublicTradeRecord } from "./models/bybit/public-trade-record.ts";
 import { KlineObj } from "./models/shared/kline.ts";
 import { LiquidationRecord } from "./models/shared/liquidation-record.ts";
 import { OpenInterest } from "./models/shared/oi.ts";
 
 const kv = await Deno.openKv();
 
-const KlineTf = "Kline_1m";
-const OiTf = "Oi_1m";
-const FrTf = "Fr_1m";
-const LiqTf = "Liq_1m";
-const PtTf = "Pt_1m";
+const KlineTf = "Kline_5m";
+const OiTf = "Oi_5m";
+const FrTf = "Fr_m";
+const LiqTf = "Liq_5m";
+const PtTf = "Pt_5m";
 
 const kline_arr: any[] = [];
 const oi_arr: any[] = [];
@@ -28,7 +29,7 @@ const oiEntries = await kv.list<OpenInterest>({
 const frEntries = await kv.list<FundingRate>({
   prefix: [FrTf],
 });
-const ptEntries = await kv.list<PublicTradeObj>({
+const ptEntries = await kv.list<PublicTradeRecord>({
   prefix: [PtTf],
 });
 
@@ -58,13 +59,14 @@ for await (const res of frEntries) {
     symbol: res.value.symbol,
     closeTime: res.value.closeTime,
   });
+  console.log(res.value.symbol, res.value.fr, res.value.nextFundingTime);
 }
 
 for await (const res of ptEntries) {
   pt_arr.push({
     tf: FrTf,
     symbol: res.value.symbol,
-    closeTime: res.value.,
+    closeTime: res.value.closeTime,
   });
 }
 
@@ -86,6 +88,7 @@ oi_arr.forEach((o) => {
 
 fr_arr.forEach((o) => {
   console.log(o.tf, o.symbol, UnixToTime(Number(o.closeTime)));
+  console.log(o.tf, o.symbol, UnixToTime(Number(o.closeTime)));
 });
 
 pt_arr.forEach((o) => {
@@ -95,3 +98,14 @@ pt_arr.forEach((o) => {
 liq_arr.forEach((o) => {
   console.log(o.tf, o.symbol, UnixToTime(Number(o.closeTime)));
 });
+
+const shit = await kv.list({ prefix: [] });
+for await (const res of shit) {
+  const value: any = res.value;
+  const key: any = res.key;
+
+  if (key[0].includes("Fr_")) {
+    console.log("**", value);
+    console.log("****", UnixToTime(value.closeTime));
+  }
+}

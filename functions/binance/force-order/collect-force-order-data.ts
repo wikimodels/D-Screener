@@ -33,28 +33,31 @@ export function collectForceOrderData(symbol: string, timeframe: string) {
 
   setInterval(async () => {
     if (isCandleIsUp(timeframe)) {
+      const tfControl = getTimeframeControl(symbol);
+      liquidationRecord.closeTime =
+        tfControl?.closeTime || new Date().getTime() - 1500;
       const msg: QueueMsg = {
         timeframe: timeframe,
         queueName: KvOps.saveLiqObjToKv,
         data: {
           dataObj: liquidationRecord,
-          closeTime: new Date().getTime() - 1500,
+          closeTime: liquidationRecord.closeTime,
         },
       };
-      console.log(UnixToTime(msg.data.closeTime));
+
       await enqueue(msg);
       liquidationRecord = resetLiquidationRecord(symbol);
     }
-  }, 1000);
+  }, 800);
 
   ws.on("open", function () {
     print(
       ConsoleColors.yellow,
-      `binance ${symbol} forceOrder-ws --> connected`
+      `BINANCE:${symbol} forceOrder-ws --> connected`
     );
   });
 
-  ws.on("message", async function (message: any) {
+  ws.on("message", function (message: any) {
     const data: ForceOrderData = JSON.parse(message.data);
     const obj: ForceOrderObj = mapForceOrderDataToObj(data);
     liquidationRecord = updateLiquidationRecord(liquidationRecord, obj, 0);

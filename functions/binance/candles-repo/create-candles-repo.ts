@@ -38,12 +38,12 @@ export async function createCandlesRepo(
         }
       });
       liq.forEach((el) => {
-        if (k.closeTime == el.closeTime) {
+        if (k.closeTime >= el.closeTime && el.closeTime > k.openTime) {
           k.liquidations = el;
         }
       });
       pt.forEach((el) => {
-        if (k.closeTime == el.closeTime) {
+        if (k.closeTime >= el.closeTime && el.closeTime > k.openTimes) {
           k.numberOfTrades = el.numberOfTrades;
           k.takerBuyBaseVolume = el.takerBuyBaseVolume;
           k.takerSellBaseVolume = el.takerSellBaseVolume;

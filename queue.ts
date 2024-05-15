@@ -1,4 +1,4 @@
-import { cleanKv } from "./functions/kv-utils/clean-kv.ts";
+import { cleanKv } from "./functions/kv-utils/kv-clean.ts";
 import { QueueTask } from "./models/queue-task.ts";
 interface Task {
   kvNamespace: string;

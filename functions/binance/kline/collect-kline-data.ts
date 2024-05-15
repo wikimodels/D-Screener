@@ -24,7 +24,7 @@ export function collectKlineData(symbol: string, timeframe: string) {
     `${env["BINANCE_SPOT_WS"]}${symbol.toLowerCase()}@kline_${timeframe}`
   );
   ws.on("open", function () {
-    print(ConsoleColors.green, `${symbol} kline-ws --> connected`);
+    print(ConsoleColors.green, `BINANCE:${symbol} kline-ws --> connected`);
   });
   ws.on("message", async function (message: any) {
     const data: KlineData = JSON.parse(message.data);
@@ -55,14 +55,14 @@ export function collectKlineData(symbol: string, timeframe: string) {
       };
       await enqueue(msg);
 
-      if (!(await oiRecordExists(obj, timeframe))) {
+      if (!(await oiRecordExists(obj.symbol, obj.closeTime, timeframe))) {
         await collectOiData(symbol, obj.closeTime, timeframe);
       }
     } else {
       setTimeframeControl({
         symbol: symbol,
-        openTime: 0,
-        closeTime: 0,
+        openTime: data.k.t,
+        closeTime: data.k.T,
         isClosed: false,
       });
     }

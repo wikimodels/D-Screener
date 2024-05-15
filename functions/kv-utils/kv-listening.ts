@@ -5,6 +5,7 @@ import { LiquidationRecord } from "../../models/shared/liquidation-record.ts";
 import { OpenInterest } from "../../models/shared/oi.ts";
 import { PublicTradeRecord } from "../../models/bybit/public-trade-record.ts";
 import { KvOps } from "./kv-ops.ts";
+import { UnixToTime } from "../utils/time-converter.ts";
 const kv = await Deno.openKv();
 
 export function listenQueues() {
@@ -41,7 +42,16 @@ export function listenQueues() {
           ]);
 
         if (!record.value) {
-          await kv.set([`Liq_${msg.timeframe}`, obj.symbol, closeTime], obj);
+          const res = await kv.set(
+            [`Liq_${msg.timeframe}`, obj.symbol, closeTime],
+            obj
+          );
+          console.log(
+            obj.symbol,
+            "Liq inserted",
+            res.ok,
+            UnixToTime(new Date().getTime())
+          );
         }
       }
       if (msg.queueName == KvOps.saveOiObjToKv) {
@@ -59,7 +69,6 @@ export function listenQueues() {
         }
       }
       if (msg.queueName == KvOps.savePtObjToKv) {
-        console.log("PT INSERTION....");
         const obj: PublicTradeRecord = msg.data.dataObj as PublicTradeRecord;
         const closeTime: number = msg.data.closeTime;
         const record: Deno.KvEntryMaybe<PublicTradeRecord> =
@@ -70,7 +79,16 @@ export function listenQueues() {
           ]);
 
         if (!record.value) {
-          await kv.set([`Pt_${msg.timeframe}`, obj.symbol, closeTime], obj);
+          const res = await kv.set(
+            [`Pt_${msg.timeframe}`, obj.symbol, closeTime],
+            obj
+          );
+          console.log(
+            obj.symbol,
+            "PT inserted",
+            res.ok,
+            UnixToTime(new Date().getTime())
+          );
         }
       }
     });

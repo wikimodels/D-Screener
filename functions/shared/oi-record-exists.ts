@@ -10,7 +10,7 @@ export async function oiRecordExists(
   const record: Deno.KvEntryMaybe<OpenInterest> = await kv.get<OpenInterest>([
     `Oi_${timeframe}`,
     symbol,
-    closeTime.toString(),
+    closeTime,
   ]);
   if (record.value) {
     return true;

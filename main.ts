@@ -1,5 +1,5 @@
 import { DateTime } from "https://deno.land/x/ptera@v1.0.2/mod.ts";
-import { cleanKv } from "./functions/kv-utils/clean-kv.ts";
+import { cleanKv } from "./functions/kv-utils/kv-clean.ts";
 import { getAllCoins } from "./functions/utils/get-coins.ts";
 import { print, ConsoleColors } from "./functions/utils/print.ts";
 
@@ -20,9 +20,9 @@ export async function main(timeframe: string) {
     (c) => c.exchange == "bi" || c.exchange == "biby"
   );
 
-  //biMain(timeframe, biCoins);
+  biMain(timeframe, biCoins);
   byMain(timeframe, byCoins);
 }
 
-main(TF.m1);
+main(TF.m5);
 listenQueues();

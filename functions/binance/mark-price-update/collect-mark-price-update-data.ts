@@ -22,7 +22,7 @@ export function collectMarkPriceData(symbol: string, timeframe: string) {
     `${env["BINANCE_FWS_BASE"]}${symbol.toLowerCase()}@markPrice`
   );
   ws.on("open", function () {
-    print(ConsoleColors.cyan, `${symbol} markPrice --> connected`);
+    print(ConsoleColors.cyan, `BINANCE:${symbol} markPrice --> connected`);
   });
   ws.on("message", async function (message: any) {
     const tfControl = getTimeframeControl(symbol);

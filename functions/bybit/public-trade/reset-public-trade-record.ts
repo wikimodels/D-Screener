@@ -9,7 +9,6 @@ export function resetPublicTradeRecord(symbol: string): PublicTradeRecord {
     takerBuyQuoteVolume: 0,
     takerSellBaseVolume: 0,
     takerSellQuoteVolume: 0,
-    closeTime: 0,
   };
   return obj;
 }
