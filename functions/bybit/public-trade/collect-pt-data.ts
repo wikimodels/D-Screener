@@ -63,7 +63,7 @@ export function collectPublicTradeData(symbol: string, timeframe: string) {
   });
 
   ws.on("ping", (data: Uint8Array) => {
-    print(ConsoleColors.green, `${symbol} kline ---> ping`);
+    print(ConsoleColors.green, `${symbol} ${timeframe} kline ---> ping`);
     // Send a pong frame with the same payload
     ws.send(data);
   });

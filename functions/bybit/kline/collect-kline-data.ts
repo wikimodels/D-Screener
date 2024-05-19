@@ -30,7 +30,10 @@ export function collectKlineData(symbol: string, timeframe: string) {
   const ws: WebSocketClient = new StandardWebSocketClient(url);
 
   ws.on("open", function () {
-    print(ConsoleColors.green, `BYBIT:${symbol} kline-ws --> connected`);
+    print(
+      ConsoleColors.green,
+      `BYBIT:${symbol} ${timeframe} kline-ws --> connected`
+    );
     ws.send(
       JSON.stringify({
         op: "subscribe",

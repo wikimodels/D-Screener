@@ -24,7 +24,10 @@ export function collectKlineData(symbol: string, timeframe: string) {
     `${env["BINANCE_SPOT_WS"]}${symbol.toLowerCase()}@kline_${timeframe}`
   );
   ws.on("open", function () {
-    print(ConsoleColors.green, `BINANCE:${symbol} kline-ws --> connected`);
+    print(
+      ConsoleColors.green,
+      `BINANCE:${symbol} ${timeframe} kline-ws --> connected`
+    );
   });
   ws.on("message", async function (message: any) {
     const data: KlineData = JSON.parse(message.data);

@@ -3,7 +3,9 @@
   "packages": {
     "specifiers": {
       "npm:@aws-crypto/util": "npm:@aws-crypto/util@5.2.0",
+      "npm:@binance/futures-connector": "npm:@binance/futures-connector@0.1.0",
       "npm:axios": "npm:axios@1.6.8",
+      "npm:binance": "npm:binance@2.10.4_ws@7.5.9_webpack@5.91.0__acorn@8.11.3",
       "npm:binance-api-node": "npm:binance-api-node@0.12.7_ws@7.5.9",
       "npm:bybit-api": "npm:bybit-api@3.10.3_ws@7.5.9_webpack@5.91.0__acorn@8.11.3",
       "npm:crypto": "npm:crypto@1.0.1",
@@ -27,6 +29,13 @@
         "dependencies": {
           "@smithy/types": "@smithy/types@2.12.0",
           "tslib": "tslib@2.6.2"
+        }
+      },
+      "@binance/futures-connector@0.1.0": {
+        "integrity": "sha512-UZCLiraEf7ZcwrR8upp0VWgBf7i/HqBOmowd1ohnyTcCVYVk1YRSpBVNQFJ/vZH7jgw0pzH0y8qqLDdqlcz7XQ==",
+        "dependencies": {
+          "axios": "axios@1.6.8",
+          "ws": "ws@8.16.0"
         }
       },
       "@discoveryjs/json-ext@0.5.7": {
@@ -304,6 +313,12 @@
           "debug": "debug@4.3.4"
         }
       },
+      "agent-base@7.1.1": {
+        "integrity": "sha512-H0TSyFNDMomMNJQBn8wFV5YC/2eJ+VXECwOadZJT554xP6cODZHPX3H9QMQECxvrgiSOP1pHjy1sMWQVYJOUOA==",
+        "dependencies": {
+          "debug": "debug@4.3.4"
+        }
+      },
       "ajv-keywords@3.5.2_ajv@6.12.6": {
         "integrity": "sha512-5p6WTN0DdTGVQk6VjcEju19IgaHudalcfabD7yhDGeA6bcQnmL+CpveLJq/3hvfwd1aof6L386Ougkx6RfyMIQ==",
         "dependencies": {
@@ -358,6 +373,19 @@
           "json-bigint": "json-bigint@1.0.0",
           "lodash.zipobject": "lodash.zipobject@4.1.3",
           "reconnecting-websocket": "reconnecting-websocket@4.4.0",
+          "ws": "ws@7.5.9"
+        }
+      },
+      "binance@2.10.4_ws@7.5.9_webpack@5.91.0__acorn@8.11.3": {
+        "integrity": "sha512-YmwdlQ91SDE7fiIr+8hv7I0YQQi+ErDrqHy1T55UggJHClsh3TL8HenIiNsh3uOxLe4G7TH9pq9gAluIJRk5uQ==",
+        "dependencies": {
+          "axios": "axios@1.6.8",
+          "https-proxy-agent": "https-proxy-agent@6.2.1",
+          "isomorphic-ws": "isomorphic-ws@4.0.1_ws@7.5.9",
+          "nanoid": "nanoid@3.3.7",
+          "source-map-loader": "source-map-loader@2.0.2_webpack@5.91.0__acorn@8.11.3",
+          "ts-loader": "ts-loader@8.4.0_typescript@5.4.5_webpack@5.91.0__acorn@8.11.3",
+          "webpack": "webpack@5.91.0_acorn@8.11.3",
           "ws": "ws@7.5.9"
         }
       },
@@ -829,6 +857,13 @@
           "debug": "debug@4.3.4"
         }
       },
+      "https-proxy-agent@6.2.1": {
+        "integrity": "sha512-ONsE3+yfZF2caH5+bJlcddtWqNI3Gvs5A38+ngvljxaBiRXRswym2c7yf8UAeFpRFKjFNHIFEHqR/OLAWJzyiA==",
+        "dependencies": {
+          "agent-base": "agent-base@7.1.1",
+          "debug": "debug@4.3.4"
+        }
+      },
       "iconv-lite@0.4.24": {
         "integrity": "sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==",
         "dependencies": {
@@ -1034,6 +1069,10 @@
       },
       "ms@2.1.3": {
         "integrity": "sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==",
+        "dependencies": {}
+      },
+      "nanoid@3.3.7": {
+        "integrity": "sha512-eSRppjcPIatRIMC1U6UngP8XFcz8MQWGQdt1MTBQ7NaAmvXDfvNxbvWV3x2y6CdEUciCSsDHDQZbhYaB8QEo2g==",
         "dependencies": {}
       },
       "negotiator@0.6.3": {
@@ -1597,6 +1636,10 @@
       },
       "ws@7.5.9": {
         "integrity": "sha512-F+P9Jil7UiSKSkppIiD94dN07AwvFixvLIj1Og1Rl9GGMuNipJnV9JzjD6XuqmAeiswGvUmNLjr5cFuXwNS77Q==",
+        "dependencies": {}
+      },
+      "ws@8.16.0": {
+        "integrity": "sha512-HS0c//TP7Ina87TfiPUz1rQzMhHrl/SG2guqRcTOIUYD2q8uhUdNHZYJUaQ8aTGPzCh+c6oawMKW35nFl1dxyQ==",
         "dependencies": {}
       }
     }

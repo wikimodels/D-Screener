@@ -1,56 +1,74 @@
-import { load } from "https://deno.land/std@0.223.0/dotenv/mod.ts";
-import { mapResponseToOiData } from "./functions/bybit/oi/map-response-to-oi-data.ts";
-import { enqueue } from "./functions/kv-utils/kv-enqueue.ts";
-import { mapOiHistDataToOiObjs } from "./functions/shared/map-oi-hist-data-to-oi-objs.ts";
-import { SYNQ } from "./functions/shared/timeframe-control/synq.ts";
-import { calculateStartTime } from "./functions/utils/calculate-start-time.ts";
-import { getCandleInterval } from "./functions/utils/get-candle-interval.ts";
-import { QueueMsg } from "./models/queue-task.ts";
-import { OpenInterestHist, OpenInterest } from "./models/shared/oi.ts";
-import { UnixToTime } from "./functions/utils/time-converter.ts";
+import * as Binance from "npm:binance";
+import { UMFutures } from "npm:@binance/futures-connector";
+import {
+  WebSocketClient,
+  StandardWebSocketClient,
+} from "https://deno.land/x/websocket@v0.1.4/mod.ts";
+import { ConsoleColors, print } from "./functions/utils/print.ts";
 
+import { load } from "https://deno.land/std@0.223.0/dotenv/mod.ts";
 const env = await load();
 
-export async function getOi(symbol: string, timeframe: string) {
-  //BYBIT DOESN'T HAVE OI TIMEFRAME == 1M
-  //THAT'S WHY IT HAS TO BE CHECKED
-  timeframe = timeframe.replace(/m/g, "min");
-  timeframe = timeframe == "1min" ? "5min" : timeframe;
+const orderClient = new Binance.USDMClient({
+  api_key: env["BINANCE_TESTNET_API_KEY"],
+  api_secret: env["BINANCE_TESTNET_SECRET_KEY"],
+  baseUrl: env["BINANCE_REST_TESTNET"],
+  beautifyResponses: true,
+});
 
-  const url = new URL(env["BYBIT_OI"]);
-  url.searchParams.append("symbol", symbol);
-  url.searchParams.append("category", "linear");
-  url.searchParams.append("limit", "1");
-  url.searchParams.append("intervalTime", timeframe);
-
-  try {
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch data: ${response.statusText}`);
+// orderClient
+//   .submitNewOrder({
+//     side: "SELL",
+//     symbol: "BTCUSDT",
+//     type: "MARKET",
+//     quantity: 0.01,
+//   })
+//   .then((res) => {
+//     console.log(res);
+//   })
+//   .catch((e) => {
+//     console.log(e);
+//   });
+console.log(env["BINANCE_TESTNET_API_KEY"]);
+console.log(env["BINANCE_TESTNET_SECRET_KEY"]);
+console.log(env["BINANCE_REST_TESTNET"]);
+export async function collectUserData() {
+  const listenKeyClient = new UMFutures(
+    env["BINANCE_TESTNET_API_KEY"],
+    env["BINANCE_TESTNET_SECRET_KEY"],
+    {
+      baseURL: env["BINANCE_REST_TESTNET"],
     }
+  );
+  const listenKey = (await listenKeyClient.createListenKey()).data.listenKey;
 
-    let data: any = await response.json();
-
-    let res = data.result.list;
-
-    console.log(res);
-    const oiHistData: OpenInterestHist[] = mapResponseToOiData(res, symbol);
-
-    const objs: OpenInterest[] = mapOiHistDataToOiObjs(oiHistData);
-    objs.forEach((o) => {
-      console.log(
-        o.symbol,
-        "timestamp",
-        UnixToTime(o.timestamp),
-        "cur. time",
-        UnixToTime(new Date().getTime())
-      );
+  const ws: WebSocketClient = new StandardWebSocketClient(
+    `${env["BINACE_WS_TESTNET"]}/ws/${listenKey}`
+  );
+  ws.on("open", function () {
+    JSON.stringify({
+      method: "SUBSCRIBE",
+      params: ["order"],
     });
-  } catch (error) {
+    print(ConsoleColors.green, `Binance/UserData --> connected`);
+  });
+  ws.on("message", async function (message: any) {
+    const data: any = JSON.parse(message.data);
+    console.log(data);
+  });
+  ws.on("ping", (data: Uint8Array) => {
+    print(ConsoleColors.green, `Binance/UserData ---> ping`);
+    // Send a pong frame with the same payload
+    ws.send(data);
+  });
+  ws.on("error", function (error: Error) {
+    print(ConsoleColors.red, `Binance/UserData is broken`);
     console.log(error);
-    throw error;
-  }
+  });
+  ws.on("close", function () {
+    console.log("Binance/UserData is closed");
+  });
 }
+collectUserData();
 
-getOi("ETHUSDT", "5m");
+//setInterval(() => {}, 60 * 1000);

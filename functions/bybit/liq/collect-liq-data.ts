@@ -45,7 +45,10 @@ export function collectLiqData(symbol: string, timeframe: string) {
   }, 500);
 
   ws.on("open", function () {
-    print(ConsoleColors.cyan, `BYBIT:${symbol} liq-ws --> connected`);
+    print(
+      ConsoleColors.cyan,
+      `BYBIT:${symbol} ${timeframe} liq-ws --> connected`
+    );
     ws.send(
       JSON.stringify({ op: "subscribe", args: [`liquidation.${symbol}`] })
     );

@@ -76,3 +76,12 @@ next closeTime = openTime + interval
 }
 },
 
+
+Worknig with this package
+https://www.npmjs.com/package/binance
+
+{
+  e: "listenKeyExpired",
+  E: "1716055781539",
+  listenKey: "OqysxYERyflr7onD6i5PojSoBn8gxfWlgefTcs26gqwm21FtpgsUSaX0Vtgyc6mD"
+}

@@ -53,7 +53,7 @@ export function collectForceOrderData(symbol: string, timeframe: string) {
   ws.on("open", function () {
     print(
       ConsoleColors.yellow,
-      `BINANCE:${symbol} forceOrder-ws --> connected`
+      `BINANCE:${symbol} ${timeframe} forceOrder-ws --> connected`
     );
   });
 
