@@ -30,6 +30,7 @@ export function calculateChanges(klineObjs: KlineObj[]) {
       klineObjs[i - 1].avg.avgTradeDayVol - klineObjs[i].avg.avgTradeDayVol
     );
   }
+  return klineObjs;
 }
 
 function getPercentageDif(value: number, baseline: number = 100): number {

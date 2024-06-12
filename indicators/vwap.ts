@@ -1,32 +1,33 @@
+// deno-lint-ignore-file no-explicit-any
 import { KlineObj } from "../models/shared/kline.ts";
 
-export function calculateWeeklyVwap(klineObj: KlineObj[]): KlineObj[] {
-  const weeks = splitByWeeks(klineObj);
+export function calculateWeeklyVwap(klineObjs: KlineObj[]): KlineObj[] {
+  const weeks = splitByWeeks(klineObjs);
   const result: any[] = [];
   for (let i = 0; i < weeks.length; i++) {
-    const objs = calculateVWAP(weeks[i]);
+    const objs = calculateVWAP(weeks[i], false);
     objs.forEach((v) => {
       result.push(v);
     });
   }
-
-  return result;
+  klineObjs = combineResults(klineObjs, result, false);
+  return klineObjs;
 }
 
-export function calculateDailyVwap(klineObj: KlineObj[]): KlineObj[] {
-  const days = splitByDays(klineObj);
+export function calculateDailyVwap(klineObjs: KlineObj[]): KlineObj[] {
+  const days = splitByDays(klineObjs);
   const result: any[] = [];
   for (let i = 0; i < days.length; i++) {
-    const objs = calculateVWAP(days[i]);
+    const objs = calculateVWAP(days[i], true);
     objs.forEach((v) => {
       result.push(v);
     });
   }
-
-  return result;
+  klineObjs = combineResults(klineObjs, result, true);
+  return klineObjs;
 }
 
-function calculateVWAP(klineObjs: KlineObj[]) {
+function calculateVWAP(klineObjs: KlineObj[], isDaily: boolean) {
   const res: any[] = [];
   for (let i = 0; i < klineObjs.length; i++) {
     let totalVolume = 0.0;
@@ -46,12 +47,19 @@ function calculateVWAP(klineObjs: KlineObj[]) {
     } else {
       firstStdDev = calculateFirstStdDevFromVWAP(klineObjs.slice(0, i), vwap);
     }
-    klineObjs[i].vwap.vwapValue = Number(vwap);
-    klineObjs[i].vwap.vwap1stDevUp = Number(vwap) + Number(firstStdDev);
-    klineObjs[i].vwap.vwap1stDevDown = vwap - firstStdDev;
+    if (isDaily) {
+      klineObjs[i].vwapDaily.vwapValue = Number(vwap);
+      klineObjs[i].vwapDaily.vwap1stDevUp = Number(vwap) + Number(firstStdDev);
+      klineObjs[i].vwapDaily.vwap1stDevDown = vwap - firstStdDev;
+    }
+    if (!isDaily) {
+      klineObjs[i].vwapWeekly.vwapValue = Number(vwap);
+      klineObjs[i].vwapWeekly.vwap1stDevUp = Number(vwap) + Number(firstStdDev);
+      klineObjs[i].vwapWeekly.vwap1stDevDown = vwap - firstStdDev;
+      console.log("Weekly", klineObjs[i].vwapWeekly);
+    }
     res.push(klineObjs[i]);
   }
-  console.log(res);
   return res;
 }
 
@@ -77,7 +85,6 @@ export function splitByWeeks(klineObjs: KlineObj[]) {
       mondaysIndices.push({ index: i });
     }
   });
-
   const weeks: any[] = [];
   mondaysIndices.forEach((m) => {
     const weekStart = m.index;
@@ -133,3 +140,21 @@ const calculateFirstStdDevFromVWAP = (objs: KlineObj[], vwap: number) => {
 
   return firstStdDev;
 };
+
+function combineResults(
+  primaryObjs: KlineObj[],
+  secondaryObjs: KlineObj[],
+  isDaily: boolean
+) {
+  primaryObjs.forEach((prim) => {
+    secondaryObjs.forEach((sec) => {
+      if (prim.openTime == sec.openTime && isDaily) {
+        prim.vwapDaily = sec.vwapDaily;
+      }
+      if (prim.openTime == sec.openTime && !isDaily) {
+        prim.vwapWeekly = sec.vwapWeekly;
+      }
+    });
+  });
+  return primaryObjs;
+}

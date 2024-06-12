@@ -1,7 +1,7 @@
 import { convertTimeframeFromStrToNum } from "../functions/utils/convert-timeframe.ts";
 import { KlineObj } from "../models/shared/kline.ts";
 
-export function calculateRatios(klineObjs: KlineObj[], timeframe: string) {
+export function calculateRatios(timeframe: string, klineObjs: KlineObj[]) {
   const minutesInDay = 1440;
   const windowSize = minutesInDay / convertTimeframeFromStrToNum(timeframe);
   if (windowSize > klineObjs.length) {

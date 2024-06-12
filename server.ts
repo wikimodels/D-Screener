@@ -1,23 +1,18 @@
 import express from "npm:express@4.18.2";
-
-import { load } from "https://deno.land/std@0.223.0/dotenv/mod.ts";
-
-import { testReport } from "./functions/test.report.ts";
-
-import { listenQueues } from "./functions/kv-utils/kv-listening.ts";
-import { ConsoleColors, print } from "./functions/utils/print.ts";
-
-import { TF } from "./models/shared/timeframes.ts";
-
 import { main } from "./main.ts";
-
-const env = await load();
-
+import { TF } from "./models/shared/timeframes.ts";
+import { listenQueues } from "./functions/kv-utils/kv-listening.ts";
+import { createReport } from "./functions/report/create-report.ts";
+import { getAllCoins } from "./functions/utils/get-coins.ts";
+const coins = await getAllCoins();
 const app = express();
+const minorTimeframe = TF.m15;
+const majorTimeframe = TF.h1;
 
-app.get("/", async (req: any, res: any) => {
+app.get("/fucking", async (req: any, res: any) => {
   try {
-    let shit = await testReport();
+    console.log(coins);
+    let shit = await createReport(minorTimeframe, coins);
 
     res.send(shit);
   } catch (e) {
@@ -25,21 +20,20 @@ app.get("/", async (req: any, res: any) => {
   }
 });
 
-app.get("/oi", async (req: any, res: any) => {
+app.post("/fuck", async (req: any, res: any) => {
   try {
-    //const data = testReport();
-    const data: any[] = [];
-
+    const data = await req.raw(); // Get the raw request body
+    const jsonData = JSON.parse(data); // Parse the JSON data
+    console.log(jsonData);
     res.send({ fuck: data.length });
   } catch (e) {
     console.log(e);
   }
 });
 
-app.listen(8000, async () => {
-  print(ConsoleColors.green, "Server ---> running...");
+app.listen(8000, () => {
+  console.log("%Server ---> running...", "color:green");
+  main(majorTimeframe);
+  main(minorTimeframe);
+  listenQueues();
 });
-
-main(TF.h1);
-main(TF.m5);
-listenQueues();

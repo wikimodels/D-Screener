@@ -1,5 +1,4 @@
-import { FundingRate } from "../../../models/binance/funding-rate.ts";
-import { UnixToTime } from "../../utils/time-converter.ts";
+import { FundingRate } from "../../models/binance/funding-rate.ts";
 
 export async function getFrBySymbol(
   timeframe: string,

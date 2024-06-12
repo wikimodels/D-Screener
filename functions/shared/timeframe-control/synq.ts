@@ -1,9 +1,9 @@
 export const SYNQ = {
   loadInitalKlineData: {
-    numCandles: "30", //number of candles to fetch
+    numCandles: "400", //number of candles to fetch
   },
   loadInitialOiHistData: {
-    numCandles: "30", //number of candles to fetch
+    numCandles: "400", //number of candles to fetch
   },
   calculateCMF: {
     chMfLen: 20,

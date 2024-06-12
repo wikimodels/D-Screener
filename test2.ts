@@ -29,9 +29,7 @@ const orderClient = new Binance.USDMClient({
 //   .catch((e) => {
 //     console.log(e);
 //   });
-console.log(env["BINANCE_TESTNET_API_KEY"]);
-console.log(env["BINANCE_TESTNET_SECRET_KEY"]);
-console.log(env["BINANCE_REST_TESTNET"]);
+
 export async function collectUserData() {
   const listenKeyClient = new UMFutures(
     env["BINANCE_TESTNET_API_KEY"],

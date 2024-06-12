@@ -1,6 +1,7 @@
 import { KlineObj } from "../models/shared/kline.ts";
-export function calculateAtdvAtdt(klineObjs: KlineObj[], timeframe: string) {
+export function calculateAtdvAtdt(timeframe: string, klineObjs: KlineObj[]) {
   const windowSize = timeframe == "1h" ? 24 : 24 * 15;
+  console.log("Wind.Size", windowSize, "KlObjs", klineObjs.length);
   if (windowSize > klineObjs.length) {
     throw Error("WindowSize cannot be shorter than Kline Obj Length");
   }
@@ -11,7 +12,6 @@ export function calculateAtdvAtdt(klineObjs: KlineObj[], timeframe: string) {
     let tradesSum: number = 0;
 
     for (let j = i - (windowSize - 1); j <= i; j++) {
-      console.log(`j=${j} i=${i}`);
       volSum += klineObjs[j].baseVolume;
       buyVolSum += klineObjs[j].takerBuyBaseVolume;
       sellVolSum += klineObjs[j].takerSellBaseVolume;

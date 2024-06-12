@@ -1,4 +1,4 @@
-import { PublicTradeRecord } from "../../../models/bybit/public-trade-record.ts";
+import { PublicTradeRecord } from "../../models/bybit/public-trade-record.ts";
 
 export async function getPublicTradeBySymbol(
   timeframe: string,

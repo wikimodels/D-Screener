@@ -1,4 +1,4 @@
-import { OpenInterest } from "../../../models/shared/oi.ts";
+import { OpenInterest } from "../../models/shared/oi.ts";
 
 export async function getOiBySymbol(
   timeframe: string,

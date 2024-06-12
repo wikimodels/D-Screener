@@ -1,4 +1,5 @@
-import { KlineObj } from "../../../models/shared/kline.ts";
+import { logInvalidOrderId } from "npm:binance";
+import { KlineObj } from "../../models/shared/kline.ts";
 
 export async function getKlineBySymbol(
   timeframe: string,

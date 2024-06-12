@@ -24,7 +24,16 @@ export interface KlineObj {
   liquidations: LiquidationRecord;
   fr: FundingRate;
   oi: OpenInterest;
-  vwap: { vwapValue: number; vwap1stDevUp: number; vwap1stDevDown: number };
+  vwapDaily: {
+    vwapValue: number;
+    vwap1stDevUp: number;
+    vwap1stDevDown: number;
+  };
+  vwapWeekly: {
+    vwapValue: number;
+    vwap1stDevUp: number;
+    vwap1stDevDown: number;
+  };
   chMf: {
     chMfValue: number;
     chMfEma: number;
