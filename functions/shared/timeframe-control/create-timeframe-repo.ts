@@ -1,5 +1,5 @@
 import { TimeframeControl } from "../../../models/shared/timeframe-control.ts";
-import { getAllCoins } from "../../utils/get-coins.ts";
+import { getAllCoins } from "../../utils/get-all-coins.ts";
 
 export async function createTimeframeRepo(): Promise<TimeframeControl[]> {
   let repo: TimeframeControl[];

@@ -1,10 +1,13 @@
 import { readCSVObjects } from "https://deno.land/x/csv@v0.9.2/mod.ts";
 
 async function loadCSV(filePath: string) {
-  try {
+    try { 
     let array = [];
+    const options = {      
+      lineSeparator: "\r",      
+    };
     const f = await Deno.open(filePath);
-    for await (const obj of readCSVObjects(f)) {
+    for await (const obj of readCSVObjects(f, options)) {
       array.push(obj);
     }
     array = array.map((a) => cleanObject(a));

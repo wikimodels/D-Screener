@@ -3,8 +3,9 @@ import { main } from "./main.ts";
 import { TF } from "./models/shared/timeframes.ts";
 import { listenQueues } from "./functions/kv-utils/kv-listening.ts";
 import { createReport } from "./functions/report/create-report.ts";
-import { getAllCoins } from "./functions/utils/get-coins.ts";
+import { getAllCoins } from "./functions/utils/get-all-coins.ts";
 const coins = await getAllCoins();
+console.log(coins)
 const app = express();
 const minorTimeframe = TF.m15;
 const majorTimeframe = TF.h1;
