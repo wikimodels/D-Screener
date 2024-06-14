@@ -56,7 +56,6 @@ function calculateVWAP(klineObjs: KlineObj[], isDaily: boolean) {
       klineObjs[i].vwapWeekly.vwapValue = Number(vwap);
       klineObjs[i].vwapWeekly.vwap1stDevUp = Number(vwap) + Number(firstStdDev);
       klineObjs[i].vwapWeekly.vwap1stDevDown = vwap - firstStdDev;
-      console.log("Weekly", klineObjs[i].vwapWeekly);
     }
     res.push(klineObjs[i]);
   }

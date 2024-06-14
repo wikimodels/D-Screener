@@ -1,5 +1,3 @@
-import { ConsoleColors, print } from "../utils/print.ts";
-
 export async function cleanKv() {
   const kv = await Deno.openKv();
   const entries = kv.list({ prefix: [] });
@@ -9,5 +7,5 @@ export async function cleanKv() {
       counter += 1;
     });
   }
-  print(ConsoleColors.yellow, `KVDB ---> ${counter} items deleted`);
+  console.log(`%cKVDB ---> ${counter} items deleted`, "color: yellow");
 }

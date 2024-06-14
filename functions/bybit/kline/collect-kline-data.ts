@@ -30,10 +30,11 @@ export function collectKlineData(symbol: string, timeframe: string) {
   const ws: WebSocketClient = new StandardWebSocketClient(url);
 
   ws.on("open", function () {
-    print(
-      ConsoleColors.green,
-      `BYBIT:${symbol} ${timeframe} kline-ws --> connected`
+    console.log(
+      `%cBYBIT:${symbol} ${timeframe} kline-ws --> connected`,
+      "color:green"
     );
+
     ws.send(
       JSON.stringify({
         op: "subscribe",
@@ -49,7 +50,7 @@ export function collectKlineData(symbol: string, timeframe: string) {
       const data: KlineData = obj.data[0];
 
       if (data.confirm == true) {
-        console.log("Candle is UP");
+        console.log(`%cBYBIT:${symbol} TF${timeframe} candle UP`, "color:cyan");
         const tfControl: TimeframeControl = {
           openTime: data.start,
           closeTime: data.end,
@@ -91,7 +92,6 @@ export function collectKlineData(symbol: string, timeframe: string) {
     const data: KlineData = message.data.data[0];
 
     if (data.confirm == true) {
-      console.log("Candle is closed", Number(new Date().getTime));
       const tfControl: TimeframeControl = {
         openTime: data.start,
         closeTime: data.end,
@@ -129,18 +129,16 @@ export function collectKlineData(symbol: string, timeframe: string) {
   });
 
   ws.on("ping", (data: Uint8Array) => {
-    print(ConsoleColors.green, `${symbol} kline ---> ping`);
-    // Send a pong frame with the same payload
+    console.log(`%c${symbol} kline ---> ping`, "color:green");
+
     ws.send(data);
   });
 
   ws.on("error", function (error: Error) {
-    console.log(error);
-    //print(ConsoleColors.red, `${symbol} kline-ws is broken`);
-    //throw error;
+    console.log(`%cBYBIT:${symbol}`, "color:red", error.message);
   });
 
   ws.on("close", function () {
-    console.log("THIS shithole is closed");
+    console.log(`%cBYBIT:${symbol} connection is closed`, "color:red");
   });
 }

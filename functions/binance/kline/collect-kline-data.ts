@@ -7,7 +7,6 @@ import { KlineData, KlineObj } from "../../../models/shared/kline.ts";
 import { setTimeframeControl } from "../timeframe-control.ts";
 
 import { load } from "https://deno.land/std@0.223.0/dotenv/mod.ts";
-import { ConsoleColors, print } from "../../utils/print.ts";
 import { collectOiData } from "../oi/collect-oi-data.ts";
 
 import { enqueue } from "../../kv-utils/kv-enqueue.ts";
@@ -24,9 +23,9 @@ export function collectKlineData(symbol: string, timeframe: string) {
     `${env["BINANCE_SPOT_WS"]}${symbol.toLowerCase()}@kline_${timeframe}`
   );
   ws.on("open", function () {
-    print(
-      ConsoleColors.green,
-      `BINANCE:${symbol} ${timeframe} kline-ws --> connected`
+    console.log(
+      `%cBINANCE:${symbol} ${timeframe} kline-ws --> connected`,
+      "color:green"
     );
   });
   ws.on("message", async function (message: any) {
@@ -71,12 +70,12 @@ export function collectKlineData(symbol: string, timeframe: string) {
     }
   });
   ws.on("ping", (data: Uint8Array) => {
-    print(ConsoleColors.green, `${symbol} kline ---> ping`);
-    // Send a pong frame with the same payload
+    console.log(`%c${symbol}:kline-ws ---> ping`, "color:green");
     ws.send(data);
   });
   ws.on("error", function (error: Error) {
-    print(ConsoleColors.red, `${symbol} kline-ws is broken`);
+    console.log(`%c${symbol}:kline-ws is broken`, "color:red");
+
     throw error;
   });
   ws.on("close", function () {

@@ -9,8 +9,12 @@ export interface KlineObj {
   high: number;
   low: number;
   close: number;
+  isDoji: boolean;
   isHammer: boolean;
   isPinbar: boolean;
+  is2hDoji: boolean;
+  is2hHammer: boolean;
+  is2hPinbar: boolean;
   baseVolume: number;
   closeTime: number;
   quoteVolume: number;

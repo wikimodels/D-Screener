@@ -32,7 +32,7 @@ app.post("/fuck", async (req: any, res: any) => {
 });
 
 app.listen(8000, () => {
-  console.log("%Server ---> running...", "color:green");
+  console.log("%cServer ---> running...", "color:green");
   main(majorTimeframe);
   main(minorTimeframe);
   listenQueues();

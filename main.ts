@@ -8,7 +8,7 @@ import { byMain } from "./by-main.ts";
 export async function main(timeframe: string) {
   await cleanKv()
     .then(() => {
-      print(ConsoleColors.yellow, "KVDB ---> cleaned");
+      console.log(`%cKVDB ---> cleaned`, "color: yellow");
     })
     .catch(console.error);
 

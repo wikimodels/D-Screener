@@ -20,6 +20,10 @@ export function mapKlineWsDataIntoObj(data: KlineData) {
     hlc3: (Number(data.k.o) + Number(data.k.l) + Number(data.k.c)) / 3,
     isHammer: false,
     isPinbar: false,
+    isDoji: false,
+    is2hDoji: false,
+    is2hHammer: false,
+    is2hPinbar: false,
     liquidations: {
       closeTime: 0,
       buy: {
