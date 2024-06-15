@@ -1,4 +1,3 @@
-import { main } from "./main.ts";
-import { TF } from "./models/shared/timeframes.ts";
+import { cleanKv } from "./functions/kv-utils/kv-clean.ts";
 
-main(TF.m15);
+await cleanKv();

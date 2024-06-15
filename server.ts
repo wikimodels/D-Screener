@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-unused-vars no-explicit-any
 import express from "npm:express@4.18.2";
 import { main } from "./main.ts";
 import { TF } from "./models/shared/timeframes.ts";
@@ -5,10 +6,9 @@ import { listenQueues } from "./functions/kv-utils/kv-listening.ts";
 import { createReport } from "./functions/report/create-report.ts";
 import { getAllCoins } from "./functions/utils/get-all-coins.ts";
 const coins = await getAllCoins();
-console.log(coins)
 const app = express();
-const minorTimeframe = TF.m15;
-const majorTimeframe = TF.h1;
+const minorTimeframe = TF.m5;
+const majorTimeframe = TF.m15;
 
 app.get("/fucking", async (req: any, res: any) => {
   try {
